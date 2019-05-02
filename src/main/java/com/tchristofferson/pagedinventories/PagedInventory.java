@@ -1,6 +1,7 @@
 package com.tchristofferson.pagedinventories;
 
 import com.google.common.base.Preconditions;
+import com.sun.istack.internal.Nullable;
 import com.tchristofferson.pagedinventories.handlers.PagedInventoryCloseHandler;
 import com.tchristofferson.pagedinventories.handlers.PagedInventorySwitchPageHandler;
 import com.tchristofferson.pagedinventories.utils.InventoryUtil;
@@ -83,34 +84,32 @@ public class PagedInventory implements Iterable<Inventory> {
         return pages.contains(inventory);
     }
 
-    //FIXME: Repeating code in addPage methods
     public void addPage(Map<Integer, ItemStack> contents, String title, final int size) {
         Preconditions.checkArgument(size >= MIN_INV_SIZE, "Inventory size must be >= " + MIN_INV_SIZE);
         Inventory inventory = Bukkit.createInventory(null, size, title);
 
-        for (int i = 0; i < size - 9; i++) {
-            ItemStack itemStack = contents.get(i);
-            if (itemStack != null && !InventoryUtil.isValidSlot(i, size))
-                inventory.setItem(i, itemStack);
-        }
+        //Adding items to inventory
+        contents.forEach((slot, itemStack) -> {
+            if (InventoryUtil.isValidSlot(slot, size))
+                inventory.setItem(slot, itemStack);
+        });
 
-        if (!pages.isEmpty()) {
-            inventory.setItem(InventoryUtil.getNavigationSlot(NavigationType.PREVIOUS, inventory.getSize()), navigation.get(NavigationType.PREVIOUS));
-            Inventory secondToLast = pages.get(pages.size() - 1);
-            secondToLast.setItem(InventoryUtil.getNavigationSlot(NavigationType.NEXT, secondToLast.getSize()), navigation.get(NavigationType.NEXT));
-        }
-
-        inventory.setItem(InventoryUtil.getNavigationSlot(NavigationType.CLOSE, size), navigation.get(NavigationType.CLOSE));
-        pages.add(inventory);
-
+        addPage(inventory, true);
     }
 
     public void addPage(Inventory inventory) {
-        Preconditions.checkArgument(inventory.getSize() >= MIN_INV_SIZE);
-        for (int i = inventory.getSize() - 9; i < inventory.getSize(); i++) {
-            ItemStack itemStack = inventory.getItem(i);
-            if (itemStack != null && !itemStack.getType().name().endsWith("AIR"))
-                itemStack.setAmount(0);
+        addPage(inventory, false);
+    }
+
+    private void addPage(Inventory inventory, boolean skipContentCheck) {
+        Preconditions.checkArgument(inventory.getSize() >= MIN_INV_SIZE, "Inventory size must be >= " + MIN_INV_SIZE);
+
+        if (!skipContentCheck && inventory.getContents().length != 0) {
+            for (int i = inventory.getSize() - 9; i < inventory.getSize(); i++) {
+                ItemStack itemStack = inventory.getItem(i);
+                if (itemStack != null && !itemStack.getType().name().endsWith("AIR"))
+                    itemStack.setAmount(0);
+            }
         }
 
         if (!pages.isEmpty()) {
@@ -123,42 +122,23 @@ public class PagedInventory implements Iterable<Inventory> {
         pages.add(inventory);
     }
 
-    //TODO: Touch up method
     public Inventory removePage(int index) {
         Preconditions.checkArgument(index >= 0 && index <= pages.size() - 1);
-        if (pages.size() - 1 == index && pages.size() > 1) {
+        if (pages.size() - 1 == index && pages.size() > 1) {//Is last page
             Inventory inv = pages.get(pages.size() - 2);
             inv.getItem(InventoryUtil.getNavigationSlot(NavigationType.NEXT, inv.getSize())).setAmount(0);
-
-            //Getting last page viewers and making them open the second to last page
-            //Their current page is being removed
-            List<HumanEntity> viewers = new ArrayList<>(pages.get(pages.size() - 1).getViewers());
-            if (!viewers.isEmpty())
-                viewers.forEach(viewer -> open((Player) viewer, pages.size() - 1));
-        } else if (index == 0 && pages.size() > 1) {
+            disperseViewers(pages.get(pages.size() - 1).getViewers(), pages.size() - 2);
+        } else if (index == 0 && pages.size() > 1) {//Is first page
             Inventory inv = pages.get(1);
             inv.getItem(InventoryUtil.getNavigationSlot(NavigationType.PREVIOUS, inv.getSize())).setAmount(0);
-
-            List<HumanEntity> viewers = new ArrayList<>(pages.get(0).getViewers());
-            if (!viewers.isEmpty())
-                viewers.forEach(viewer -> open((Player) viewer, 1));
-        } else if (pages.size() > 1) {
+            disperseViewers(pages.get(0).getViewers(), 1);
+        } else if (pages.size() > 1) {//Is between first and last page
             Inventory inv = pages.get(index);
-            List<HumanEntity> viewers = new ArrayList<>(inv.getViewers());
-
-            if (!viewers.isEmpty())
-                viewers.forEach(viewer -> open((Player) viewer, index + 1));
-        } else {
+            disperseViewers(inv.getViewers(), index + 1);
+        } else {//Is only page
             Inventory inv = pages.get(0);
-            List<HumanEntity> viewers = new ArrayList<>(inv.getViewers());
             pages.remove(0);
-
-            if (!viewers.isEmpty())
-                viewers.forEach(viewer -> {
-                    PagedInventoryCloseHandler.Handler handler = new PagedInventoryCloseHandler.Handler(this, viewer.getOpenInventory(), (Player) viewer);
-                    viewer.closeInventory();
-                    registrar.getCloseHandlers().forEach(pagedInventoryCloseHandler -> pagedInventoryCloseHandler.handle(handler));
-                });
+           disperseViewers(inv.getViewers(), null);
 
             return inv;
         }
@@ -204,6 +184,24 @@ public class PagedInventory implements Iterable<Inventory> {
             inventory.setItem(previous, previousButton);
             inventory.setItem(close, closeButton);
         });
+    }
+
+    private void disperseViewers(List<HumanEntity> viewers, Integer fallbackIndex) {
+        viewers = new ArrayList<>(viewers);
+        if (viewers.isEmpty())
+            return;
+
+        if (fallbackIndex == null) {
+            viewers.forEach(viewer -> {
+                PagedInventoryCloseHandler.Handler handler = new PagedInventoryCloseHandler.Handler(this, viewer.getOpenInventory(), (Player) viewer);
+                viewer.closeInventory();
+                registrar.getCloseHandlers().forEach(pagedInventoryCloseHandler -> pagedInventoryCloseHandler.handle(handler));
+            });
+
+            return;
+        }
+
+        viewers.forEach(viewer -> open((Player) viewer, fallbackIndex));
     }
 
     @Override
