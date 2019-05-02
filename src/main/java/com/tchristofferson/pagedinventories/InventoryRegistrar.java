@@ -30,12 +30,24 @@ public class InventoryRegistrar {
         clickHandlers.add(pagedInventoryClickHandler);
     }
 
+    List<PagedInventoryClickHandler> getClickHandlers() {
+        return new ArrayList<>(clickHandlers);
+    }
+
     public void addCloseHandler(PagedInventoryCloseHandler pagedInventoryCloseHandler) {
         closeHandlers.add(pagedInventoryCloseHandler);
     }
 
+    List<PagedInventoryCloseHandler> getCloseHandlers() {
+        return new ArrayList<>(closeHandlers);
+    }
+
     public void addDragHandler(PagedInventoryDragHandler pagedInventoryDragHandler) {
         dragHandlers.add(pagedInventoryDragHandler);
+    }
+
+    List<PagedInventoryDragHandler> getDragHandlers() {
+        return new ArrayList<>(dragHandlers);
     }
 
     public void addSwitchHandler(PagedInventorySwitchPageHandler pagedInventorySwitchPageHandler) {
