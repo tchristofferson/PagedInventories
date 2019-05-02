@@ -83,6 +83,7 @@ public class PagedInventory implements Iterable<Inventory> {
         return pages.contains(inventory);
     }
 
+    //FIXME: Repeating code in addPage methods
     public void addPage(Map<Integer, ItemStack> contents, String title, final int size) {
         Preconditions.checkArgument(size >= MIN_INV_SIZE, "Inventory size must be >= " + MIN_INV_SIZE);
         Inventory inventory = Bukkit.createInventory(null, size, title);
@@ -93,6 +94,13 @@ public class PagedInventory implements Iterable<Inventory> {
                 inventory.setItem(i, itemStack);
         }
 
+        if (!pages.isEmpty()) {
+            inventory.setItem(InventoryUtil.getNavigationSlot(NavigationType.PREVIOUS, inventory.getSize()), navigation.get(NavigationType.PREVIOUS));
+            Inventory secondToLast = pages.get(pages.size() - 1);
+            secondToLast.setItem(InventoryUtil.getNavigationSlot(NavigationType.NEXT, secondToLast.getSize()), navigation.get(NavigationType.NEXT));
+        }
+
+        inventory.setItem(InventoryUtil.getNavigationSlot(NavigationType.CLOSE, size), navigation.get(NavigationType.CLOSE));
         pages.add(inventory);
 
     }
