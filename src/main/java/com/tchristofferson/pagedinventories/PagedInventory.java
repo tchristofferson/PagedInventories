@@ -93,6 +93,8 @@ public class PagedInventory implements Iterable<Inventory> {
                 inventory.setItem(i, itemStack);
         }
 
+        pages.add(inventory);
+
     }
 
     public void addPage(Inventory inventory) {
@@ -110,6 +112,7 @@ public class PagedInventory implements Iterable<Inventory> {
         }
 
         inventory.setItem(InventoryUtil.getNavigationSlot(NavigationType.CLOSE, inventory.getSize()), navigation.get(NavigationType.CLOSE));
+        pages.add(inventory);
     }
 
     //TODO: Touch up method
