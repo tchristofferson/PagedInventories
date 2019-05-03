@@ -20,14 +20,6 @@ Is on Maven Central
     <version>1.0-SNAPSHOT</version>
 </dependency>
 ```
-#### Gradle Groovy
-```
-implementation 'com.tchristofferson.pagedinventories:PagedInventories:1.0'
-```
-#### Gradle Kotlin
-```
-compile("com.tchristofferson.pagedinventories:PagedInventories:1.0")
-```
 ### How to use
 Create a PagedInventoryAPI instance (You should only create one):
 ```
