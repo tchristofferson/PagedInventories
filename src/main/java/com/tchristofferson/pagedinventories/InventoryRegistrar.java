@@ -10,6 +10,7 @@ public class InventoryRegistrar {
 
     private final Map<UUID, Inventory> registrar;
     private final Map<UUID, PagedInventory> pagedInventoryRegistrar;
+    private final List<UUID> switchingPages;
 
     private final List<PagedInventoryClickHandler> clickHandlers;
     private final List<PagedInventoryCloseHandler> closeHandlers;
@@ -19,6 +20,7 @@ public class InventoryRegistrar {
     InventoryRegistrar() {
         registrar = new HashMap<>();
         pagedInventoryRegistrar = new HashMap<>();
+        switchingPages = new ArrayList<>();
 
         clickHandlers = new ArrayList<>();
         closeHandlers = new ArrayList<>();
@@ -58,9 +60,18 @@ public class InventoryRegistrar {
         return new ArrayList<>(switchHandlers);
     }
 
+    void registerSwitch(Player player) {
+        switchingPages.add(player.getUniqueId());
+    }
+
+    boolean unregisterSwitch(Player player) {
+        return switchingPages.remove(player.getUniqueId());
+    }
+
     void register(Player player, PagedInventory pagedInventory, Inventory inventory) {
-        registrar.put(player.getUniqueId(), inventory);
-        pagedInventoryRegistrar.putIfAbsent(player.getUniqueId(), pagedInventory);
+        UUID uuid = player.getUniqueId();
+        registrar.put(uuid, inventory);
+        pagedInventoryRegistrar.putIfAbsent(uuid, pagedInventory);
     }
 
     void unregister(Player player) {

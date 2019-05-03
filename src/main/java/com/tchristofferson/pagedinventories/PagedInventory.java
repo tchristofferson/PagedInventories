@@ -32,11 +32,11 @@ public class PagedInventory implements Iterable<Inventory> {
     }
 
     public boolean openNext(Player player, Inventory currentlyOpen) {
-        if (!pages.contains(currentlyOpen))
-            return false;
         int index = pages.indexOf(currentlyOpen);
-        if (pages.size() - 1 == index)
+        if (index == -1 || pages.size() - 1 == index)
             return false;
+
+        registrar.registerSwitch(player);
         boolean success = open(player, index + 1);
 
         if (success) {
@@ -54,6 +54,8 @@ public class PagedInventory implements Iterable<Inventory> {
         int index = pages.indexOf(currentlyOpen);
         if (index == 0)
             return false;
+
+        registrar.registerSwitch(player);
         boolean success = open(player, index - 1);
 
         if (success) {

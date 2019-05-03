@@ -73,9 +73,11 @@ class PagedInventoryListener implements Listener {
         if (!registrar.getOpenInventories().containsKey(player.getUniqueId()))
             return;
 
-        registrar.unregister(player);
-        PagedInventoryCloseHandler.Handler handler = new PagedInventoryCloseHandler.Handler(registrar.getOpenPagedInventories().get(player.getUniqueId()), event.getView(), player);
-        registrar.getCloseHandlers().forEach(pagedInventoryCloseHandler -> pagedInventoryCloseHandler.handle(handler));
+        if (!registrar.unregisterSwitch(player)) {
+            registrar.unregister(player);
+            PagedInventoryCloseHandler.Handler handler = new PagedInventoryCloseHandler.Handler(registrar.getOpenPagedInventories().get(player.getUniqueId()), event.getView(), player);
+            registrar.getCloseHandlers().forEach(pagedInventoryCloseHandler -> pagedInventoryCloseHandler.handle(handler));
+        }
     }
 
 }
