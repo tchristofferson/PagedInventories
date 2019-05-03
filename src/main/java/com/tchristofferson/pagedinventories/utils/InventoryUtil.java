@@ -1,7 +1,6 @@
 package com.tchristofferson.pagedinventories.utils;
 
 import com.google.common.base.Preconditions;
-import com.sun.istack.internal.NotNull;
 import com.tchristofferson.pagedinventories.NavigationType;
 
 public class InventoryUtil {
@@ -12,7 +11,7 @@ public class InventoryUtil {
         return slot < inventorySize - 9;
     }
 
-    public static int getNavigationSlot(@NotNull NavigationType navigationType, int size) {
+    public static int getNavigationSlot(NavigationType navigationType, int size) {
         Preconditions.checkArgument(navigationType != null);
         Preconditions.checkArgument(size % 9 == 0);
 

@@ -1,7 +1,6 @@
 package com.tchristofferson.pagedinventories;
 
 import com.google.common.base.Preconditions;
-import com.sun.istack.internal.Nullable;
 import com.tchristofferson.pagedinventories.handlers.PagedInventoryCloseHandler;
 import com.tchristofferson.pagedinventories.handlers.PagedInventorySwitchPageHandler;
 import com.tchristofferson.pagedinventories.utils.InventoryUtil;
@@ -31,6 +30,12 @@ public class PagedInventory implements Iterable<Inventory> {
         navigation.put(NavigationType.CLOSE, closeButton);
     }
 
+    /**
+     * Opens the next inventory of this paged inventory
+     * @param player The player opening the inventory
+     * @param currentlyOpen The inventory currently open
+     * @return {@code true} if successful, {@code false} otherwise
+     */
     public boolean openNext(Player player, Inventory currentlyOpen) {
         int index = pages.indexOf(currentlyOpen);
         if (index == -1 || pages.size() - 1 == index)
@@ -48,6 +53,12 @@ public class PagedInventory implements Iterable<Inventory> {
         return success;
     }
 
+    /**
+     * Opens the previous inventory of this paged inventory
+     * @param player The player opening the inventory
+     * @param currentlyOpen The inventory currently open
+     * @return {@code true} if successful, {@code false} otherwise
+     */
     public boolean openPrevious(Player player, Inventory currentlyOpen) {
         if (!pages.contains(currentlyOpen))
             return false;
@@ -67,12 +78,23 @@ public class PagedInventory implements Iterable<Inventory> {
         return success;
     }
 
+    /**
+     * Opens the first page of this paged inventory
+     * @param player The player opening the paged inventory
+     * @return {@code true} if successful, {@code false} otherwise
+     */
     public boolean open(Player player) {
         if (pages.isEmpty())
             return false;
         return open(player, 0);
     }
 
+    /**
+     * Opens the page at the given index of this paged inventory, index starts at 0
+     * @param player The player opening the inventory
+     * @param index The index of the inventory to be opened
+     * @return {@code true} if successful, {@code false} otherwise
+     */
     public boolean open(Player player, int index) {
         if (pages.size() - 1 < index || index < 0)
             return false;
@@ -82,10 +104,21 @@ public class PagedInventory implements Iterable<Inventory> {
         return true;
     }
 
+    /**
+     * Determine if this paged inventory contains the given inventory
+     * @param inventory The inventory to check for
+     * @return {@code true} if this paged inventory contains this inventory, {@code false} otherwise
+     */
     public boolean contains(Inventory inventory) {
         return pages.contains(inventory);
     }
 
+    /**
+     * Add a new inventory to the end of this paged inventory
+     * @param contents The content to add to the inventory. The key is the slot and the value is the item stack
+     * @param title The title for the inventory
+     * @param size The size of the inventory
+     */
     public void addPage(Map<Integer, ItemStack> contents, String title, final int size) {
         Preconditions.checkArgument(size >= MIN_INV_SIZE, "Inventory size must be >= " + MIN_INV_SIZE);
         Inventory inventory = Bukkit.createInventory(null, size, title);
@@ -99,6 +132,10 @@ public class PagedInventory implements Iterable<Inventory> {
         addPage(inventory, true);
     }
 
+    /**
+     * Add an inventory to the end of this paged inventory
+     * @param inventory The inventory to add
+     */
     public void addPage(Inventory inventory) {
         addPage(inventory, false);
     }
@@ -125,6 +162,11 @@ public class PagedInventory implements Iterable<Inventory> {
         pages.add(inventory);
     }
 
+    /**
+     * Remove the page at the given index of this paged inventory, index starts at 0
+     * @param index The index at which the inventory you want to remove is located
+     * @return The inventory removed
+     */
     public Inventory removePage(int index) {
         Preconditions.checkArgument(index >= 0 && index <= pages.size() - 1);
         if (pages.size() - 1 == index && pages.size() > 1) {//Is last page
@@ -149,15 +191,29 @@ public class PagedInventory implements Iterable<Inventory> {
         return pages.remove(index);
     }
 
+    /**
+     * Remove an inventory from this paged inventory
+     * @param inventory The inventory to remove
+     * @return The inventory removed or {@code null} if the inventory isn't in this paged inventory
+     */
     public Inventory removePage(Inventory inventory) {
         int index = pages.indexOf(inventory);
         return removePage(index);
     }
 
+    /**
+     * Get the navigation buttons of this paged inventory
+     * @return A Map of the navigation where the key is the {@link NavigationType} and the value is the item stack representing the button
+     */
     public Map<NavigationType, ItemStack> getNavigation() {
         return new HashMap<>(navigation);
     }
 
+    /**
+     * Update a navigation button of this paged inventory
+     * @param navigationType The type of button
+     * @param newButton The item stack to replace the specified button
+     */
     public void updateNavigation(NavigationType navigationType, ItemStack newButton) {
         if (navigationType == null)
             throw new NullPointerException("NavigationType cannot be null");
@@ -170,6 +226,12 @@ public class PagedInventory implements Iterable<Inventory> {
         pages.forEach(inventory -> inventory.setItem(InventoryUtil.getNavigationSlot(navigationType, inventory.getSize()), newButton));
     }
 
+    /**
+     * Update the navigation buttons of this paged inventory
+     * @param nextButton The new next button
+     * @param previousButtonThe new previous button
+     * @param closeButton The new close button
+     */
     public void updateNavigation(ItemStack nextButton, ItemStack previousButton, ItemStack closeButton) {
         navigation.put(NavigationType.NEXT, nextButton);
         navigation.put(NavigationType.PREVIOUS, previousButton);

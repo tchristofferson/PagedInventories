@@ -6,6 +6,9 @@ import org.bukkit.inventory.Inventory;
 
 import java.util.*;
 
+/**
+ * This is a registrar for open PagedInventories
+ */
 public class InventoryRegistrar {
 
     private final Map<UUID, Inventory> registrar;
@@ -26,6 +29,10 @@ public class InventoryRegistrar {
         switchHandlers = new ArrayList<>();
     }
 
+    /**
+     * This will add a new click handler, {@link PagedInventoryClickHandler}
+     * @param pagedInventoryClickHandler The handler
+     */
     public void addClickHandler(PagedInventoryClickHandler pagedInventoryClickHandler) {
         clickHandlers.add(pagedInventoryClickHandler);
     }
@@ -34,6 +41,10 @@ public class InventoryRegistrar {
         return new ArrayList<>(clickHandlers);
     }
 
+    /**
+     * This will add a new close handler, {@link PagedInventoryCloseHandler}
+     * @param pagedInventoryCloseHandler The handler
+     */
     public void addCloseHandler(PagedInventoryCloseHandler pagedInventoryCloseHandler) {
         closeHandlers.add(pagedInventoryCloseHandler);
     }
@@ -42,6 +53,10 @@ public class InventoryRegistrar {
         return new ArrayList<>(closeHandlers);
     }
 
+    /**
+     * This will add a new switch handler, {@link PagedInventorySwitchPageHandler}
+     * @param pagedInventorySwitchPageHandler The handler
+     */
     public void addSwitchHandler(PagedInventorySwitchPageHandler pagedInventorySwitchPageHandler) {
         switchHandlers.add(pagedInventorySwitchPageHandler);
     }
@@ -49,6 +64,7 @@ public class InventoryRegistrar {
     List<PagedInventorySwitchPageHandler> getSwitchHandlers() {
         return new ArrayList<>(switchHandlers);
     }
+
 
     void registerSwitch(Player player) {
         switchingPages.add(player.getUniqueId());
@@ -69,10 +85,18 @@ public class InventoryRegistrar {
         pagedInventoryRegistrar.remove(player.getUniqueId());
     }
 
+    /**
+     * This will get all the inventories that are open AND are a part of a {@link PagedInventory}
+     * @return a {@link Map} with the player's uuid as the key and the open inventory as the value
+     */
     public Map<UUID, Inventory> getOpenInventories() {
         return new HashMap<>(registrar);
     }
 
+    /**
+     * This will get all the paged inventories that are open
+     * @return a {@link Map} with the player's uuid as the key and the open {@link PagedInventory} as the value
+     */
     public Map<UUID, PagedInventory> getOpenPagedInventories() {
         return new HashMap<>(pagedInventoryRegistrar);
     }
