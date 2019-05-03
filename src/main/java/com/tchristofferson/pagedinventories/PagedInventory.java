@@ -105,6 +105,7 @@ public class PagedInventory implements Iterable<Inventory> {
 
     private void addPage(Inventory inventory, boolean skipContentCheck) {
         Preconditions.checkArgument(inventory.getSize() >= MIN_INV_SIZE, "Inventory size must be >= " + MIN_INV_SIZE);
+        Preconditions.checkState(!pages.contains(inventory), "Cannot add duplicate inventory");
 
         if (!skipContentCheck && inventory.getContents().length != 0) {
             for (int i = inventory.getSize() - 9; i < inventory.getSize(); i++) {
