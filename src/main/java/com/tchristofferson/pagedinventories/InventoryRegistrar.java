@@ -14,7 +14,6 @@ public class InventoryRegistrar {
 
     private final List<PagedInventoryClickHandler> clickHandlers;
     private final List<PagedInventoryCloseHandler> closeHandlers;
-    private final List<PagedInventoryDragHandler> dragHandlers;
     private final List<PagedInventorySwitchPageHandler> switchHandlers;
 
     InventoryRegistrar() {
@@ -24,7 +23,6 @@ public class InventoryRegistrar {
 
         clickHandlers = new ArrayList<>();
         closeHandlers = new ArrayList<>();
-        dragHandlers = new ArrayList<>();
         switchHandlers = new ArrayList<>();
     }
 
@@ -42,14 +40,6 @@ public class InventoryRegistrar {
 
     List<PagedInventoryCloseHandler> getCloseHandlers() {
         return new ArrayList<>(closeHandlers);
-    }
-
-    public void addDragHandler(PagedInventoryDragHandler pagedInventoryDragHandler) {
-        dragHandlers.add(pagedInventoryDragHandler);
-    }
-
-    List<PagedInventoryDragHandler> getDragHandlers() {
-        return new ArrayList<>(dragHandlers);
     }
 
     public void addSwitchHandler(PagedInventorySwitchPageHandler pagedInventorySwitchPageHandler) {
@@ -99,13 +89,12 @@ public class InventoryRegistrar {
                 && pagedInventoryRegistrar.equals(inventoryRegistrar.pagedInventoryRegistrar)
                 && clickHandlers.equals(inventoryRegistrar.clickHandlers)
                 && closeHandlers.equals(inventoryRegistrar.closeHandlers)
-                && dragHandlers.equals(inventoryRegistrar.dragHandlers)
                 && switchHandlers.equals(inventoryRegistrar.switchHandlers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(registrar, pagedInventoryRegistrar, clickHandlers, closeHandlers, dragHandlers, switchHandlers);
+        return Objects.hash(registrar, pagedInventoryRegistrar, clickHandlers, closeHandlers, switchHandlers);
     }
 
 }
