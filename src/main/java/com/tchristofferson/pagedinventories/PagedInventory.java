@@ -60,10 +60,8 @@ public class PagedInventory implements Iterable<Inventory> {
      * @return {@code true} if successful, {@code false} otherwise
      */
     public boolean openPrevious(Player player, Inventory currentlyOpen) {
-        if (!pages.contains(currentlyOpen))
-            return false;
         int index = pages.indexOf(currentlyOpen);
-        if (index == 0)
+        if (index <= 0)
             return false;
 
         registrar.registerSwitch(player);
@@ -229,7 +227,7 @@ public class PagedInventory implements Iterable<Inventory> {
     /**
      * Update the navigation buttons of this paged inventory
      * @param nextButton The new next button
-     * @param previousButtonThe new previous button
+     * @param previousButton The new previous button
      * @param closeButton The new close button
      */
     public void updateNavigation(ItemStack nextButton, ItemStack previousButton, ItemStack closeButton) {
