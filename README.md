@@ -1,4 +1,4 @@
-[![Javadocs](https://javadoc.io/badge/com.tchristofferson.pagedinventories/PagedInventories.svg)](https://javadoc.io/doc/com.tchristofferson.pagedinventories/PagedInventories)
+[![Maven Central](https://img.shields.io/maven-central/v/com.tchristofferson.pagedinventories/PagedInventories.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.tchristofferson.pagedinventories%22%20AND%20a:%22PagedInventories%22)[![Javadocs](https://javadoc.io/badge/com.tchristofferson.pagedinventories/PagedInventories.svg)](https://javadoc.io/doc/com.tchristofferson.pagedinventories/PagedInventories)
 # PagedInventories
 API for easily creating multi paged inventory GUIs in Spigot/Bukkit (Minecraft)
 
