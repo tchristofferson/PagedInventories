@@ -12,7 +12,7 @@ import java.util.*;
 public class InventoryRegistrar {
 
     private final Map<UUID, Inventory> registrar;
-    private final Map<UUID, PagedInventory> pagedInventoryRegistrar;
+    private final Map<UUID, IPagedInventory> pagedInventoryRegistrar;
     private final List<UUID> switchingPages;
 
     private final List<PagedInventoryClickHandler> clickHandlers;
@@ -66,7 +66,11 @@ public class InventoryRegistrar {
     }
 
 
-    void registerSwitch(Player player) {
+    /**'
+     * Registers that a player is switching between pages in a {@link IPagedInventory}
+     * @param player The player switching between pages
+     */
+    public void registerSwitch(Player player) {
         switchingPages.add(player.getUniqueId());
     }
 
@@ -74,7 +78,14 @@ public class InventoryRegistrar {
         return switchingPages.remove(player.getUniqueId());
     }
 
-    void register(Player player, PagedInventory pagedInventory, Inventory inventory) {
+    /**
+     * Register that a player has an {@link IPagedInventory} open
+     * Call this method when opening a {@link IPagedInventory}
+     * @param player The player that has opened the {@link IPagedInventory}
+     * @param pagedInventory The {@link IPagedInventory} the player is opening / has opened
+     * @param inventory The page opened by the player
+     */
+    public void register(Player player, IPagedInventory pagedInventory, Inventory inventory) {
         UUID uuid = player.getUniqueId();
         registrar.put(uuid, inventory);
         pagedInventoryRegistrar.putIfAbsent(uuid, pagedInventory);
@@ -86,7 +97,7 @@ public class InventoryRegistrar {
     }
 
     /**
-     * This will get all the inventories that are open AND are a part of a {@link PagedInventory}
+     * This will get all the inventories that are open AND are a part of a {@link IPagedInventory}
      * @return a {@link Map} with the player's uuid as the key and the open inventory as the value
      */
     public Map<UUID, Inventory> getOpenInventories() {
@@ -95,9 +106,9 @@ public class InventoryRegistrar {
 
     /**
      * This will get all the paged inventories that are open
-     * @return a {@link Map} with the player's uuid as the key and the open {@link PagedInventory} as the value
+     * @return a {@link Map} with the player's uuid as the key and the open {@link IPagedInventory} as the value
      */
-    public Map<UUID, PagedInventory> getOpenPagedInventories() {
+    public Map<UUID, IPagedInventory> getOpenPagedInventories() {
         return new HashMap<>(pagedInventoryRegistrar);
     }
 

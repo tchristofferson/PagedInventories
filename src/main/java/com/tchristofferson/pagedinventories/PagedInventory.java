@@ -12,15 +12,13 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
-public class PagedInventory implements Iterable<Inventory> {
-
-    private static final int MIN_INV_SIZE = 18;
+public class PagedInventory implements IPagedInventory {
 
     private final InventoryRegistrar registrar;
     private final List<Inventory> pages;
     private final Map<NavigationType, ItemStack> navigation;
 
-    PagedInventory(InventoryRegistrar registrar, ItemStack nextButton, ItemStack previousButton, ItemStack closeButton) {
+    protected PagedInventory(InventoryRegistrar registrar, ItemStack nextButton, ItemStack previousButton, ItemStack closeButton) {
         this.registrar = registrar;
         pages = new ArrayList<>();
 
@@ -31,11 +29,9 @@ public class PagedInventory implements Iterable<Inventory> {
     }
 
     /**
-     * Opens the next inventory of this paged inventory
-     * @param player The player opening the inventory
-     * @param currentlyOpen The inventory currently open
-     * @return {@code true} if successful, {@code false} otherwise
+     * {@inheritDoc}
      */
+    @Override
     public boolean openNext(Player player, Inventory currentlyOpen) {
         int index = pages.indexOf(currentlyOpen);
         if (index == -1 || pages.size() - 1 == index)
@@ -54,11 +50,9 @@ public class PagedInventory implements Iterable<Inventory> {
     }
 
     /**
-     * Opens the previous inventory of this paged inventory
-     * @param player The player opening the inventory
-     * @param currentlyOpen The inventory currently open
-     * @return {@code true} if successful, {@code false} otherwise
+     * {@inheritDoc}
      */
+    @Override
     public boolean openPrevious(Player player, Inventory currentlyOpen) {
         int index = pages.indexOf(currentlyOpen);
         if (index <= 0)
@@ -77,10 +71,9 @@ public class PagedInventory implements Iterable<Inventory> {
     }
 
     /**
-     * Opens the first page of this paged inventory
-     * @param player The player opening the paged inventory
-     * @return {@code true} if successful, {@code false} otherwise
+     * {@inheritDoc}
      */
+    @Override
     public boolean open(Player player) {
         if (pages.isEmpty())
             return false;
@@ -88,11 +81,9 @@ public class PagedInventory implements Iterable<Inventory> {
     }
 
     /**
-     * Opens the page at the given index of this paged inventory, index starts at 0
-     * @param player The player opening the inventory
-     * @param index The index of the inventory to be opened
-     * @return {@code true} if successful, {@code false} otherwise
+     * {@inheritDoc}
      */
+    @Override
     public boolean open(Player player, int index) {
         if (pages.size() - 1 < index || index < 0)
             return false;
@@ -103,20 +94,17 @@ public class PagedInventory implements Iterable<Inventory> {
     }
 
     /**
-     * Determine if this paged inventory contains the given inventory
-     * @param inventory The inventory to check for
-     * @return {@code true} if this paged inventory contains this inventory, {@code false} otherwise
+     * {@inheritDoc}
      */
+    @Override
     public boolean contains(Inventory inventory) {
         return pages.contains(inventory);
     }
 
     /**
-     * Add a new inventory to the end of this paged inventory
-     * @param contents The content to add to the inventory. The key is the slot and the value is the item stack
-     * @param title The title for the inventory
-     * @param size The size of the inventory
+     * {@inheritDoc}
      */
+    @Override
     public void addPage(Map<Integer, ItemStack> contents, String title, final int size) {
         Preconditions.checkArgument(size >= MIN_INV_SIZE, "Inventory size must be >= " + MIN_INV_SIZE);
         Inventory inventory = Bukkit.createInventory(null, size, title);
@@ -131,9 +119,9 @@ public class PagedInventory implements Iterable<Inventory> {
     }
 
     /**
-     * Add an inventory to the end of this paged inventory
-     * @param inventory The inventory to add
+     * {@inheritDoc}
      */
+    @Override
     public void addPage(Inventory inventory) {
         addPage(inventory, false);
     }
@@ -161,10 +149,9 @@ public class PagedInventory implements Iterable<Inventory> {
     }
 
     /**
-     * Remove the page at the given index of this paged inventory, index starts at 0
-     * @param index The index at which the inventory you want to remove is located
-     * @return The inventory removed
+     * {@inheritDoc}
      */
+    @Override
     public Inventory removePage(int index) {
         Preconditions.checkArgument(index >= 0 && index <= pages.size() - 1);
         if (pages.size() - 1 == index && pages.size() > 1) {//Is last page
@@ -190,28 +177,32 @@ public class PagedInventory implements Iterable<Inventory> {
     }
 
     /**
-     * Remove an inventory from this paged inventory
-     * @param inventory The inventory to remove
-     * @return The inventory removed or {@code null} if the inventory isn't in this paged inventory
+     * {@inheritDoc}
      */
-    public Inventory removePage(Inventory inventory) {
+    @Override
+    public boolean removePage(Inventory inventory) {
         int index = pages.indexOf(inventory);
-        return removePage(index);
+
+        if (index == -1) {
+            return false;
+        }
+
+        removePage(index);
+        return true;
     }
 
     /**
-     * Get the navigation buttons of this paged inventory
-     * @return A Map of the navigation where the key is the {@link NavigationType} and the value is the item stack representing the button
+     * {@inheritDoc}
      */
+    @Override
     public Map<NavigationType, ItemStack> getNavigation() {
         return new HashMap<>(navigation);
     }
 
     /**
-     * Update a navigation button of this paged inventory
-     * @param navigationType The type of button
-     * @param newButton The item stack to replace the specified button
+     * {@inheritDoc}
      */
+    @Override
     public void updateNavigation(NavigationType navigationType, ItemStack newButton) {
         if (navigationType == null)
             throw new NullPointerException("NavigationType cannot be null");
@@ -225,11 +216,9 @@ public class PagedInventory implements Iterable<Inventory> {
     }
 
     /**
-     * Update the navigation buttons of this paged inventory
-     * @param nextButton The new next button
-     * @param previousButton The new previous button
-     * @param closeButton The new close button
+     * {@inheritDoc}
      */
+    @Override
     public void updateNavigation(ItemStack nextButton, ItemStack previousButton, ItemStack closeButton) {
         navigation.put(NavigationType.NEXT, nextButton);
         navigation.put(NavigationType.PREVIOUS, previousButton);

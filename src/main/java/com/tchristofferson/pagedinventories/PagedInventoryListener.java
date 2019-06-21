@@ -32,7 +32,7 @@ class PagedInventoryListener implements Listener {
             return;
 
         event.setCancelled(true);
-        PagedInventory pagedInventory = registrar.getOpenPagedInventories().get(player.getUniqueId());
+        IPagedInventory pagedInventory = registrar.getOpenPagedInventories().get(player.getUniqueId());
         ItemStack clicked = event.getCurrentItem();
         Map<NavigationType, ItemStack> navigation = pagedInventory.getNavigation();
 

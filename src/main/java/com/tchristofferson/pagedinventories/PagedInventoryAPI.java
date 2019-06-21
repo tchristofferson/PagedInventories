@@ -14,13 +14,13 @@ public class PagedInventoryAPI {
     }
 
     /**
-     * Creates a new {@link PagedInventory}
+     * Creates a new {@link IPagedInventory}
      * @param nextButton The next button
      * @param previousButton The previous button
      * @param closeButton The close button
-     * @return The newly created {@link PagedInventory}
+     * @return The newly created {@link IPagedInventory}
      */
-    public PagedInventory createPagedInventory(ItemStack nextButton, ItemStack previousButton, ItemStack closeButton) {
+    public IPagedInventory createPagedInventory(ItemStack nextButton, ItemStack previousButton, ItemStack closeButton) {
         return new PagedInventory(registrar, nextButton, previousButton, closeButton);
     }
 

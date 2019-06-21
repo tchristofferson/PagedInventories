@@ -1,6 +1,6 @@
 package com.tchristofferson.pagedinventories.handlers;
 
-import com.tchristofferson.pagedinventories.PagedInventory;
+import com.tchristofferson.pagedinventories.IPagedInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 
@@ -9,22 +9,21 @@ import java.util.Objects;
 public abstract class PagedInventoryHandler {
 
     PagedInventoryHandler() {
-
     }
 
     public static class Handler {
 
-        private final PagedInventory pagedInventory;
+        private final IPagedInventory pagedInventory;
         private final InventoryView inventoryView;
         private final Player player;
 
-        Handler(PagedInventory pagedInventory, InventoryView inventoryView, Player player) {
+        Handler(IPagedInventory pagedInventory, InventoryView inventoryView, Player player) {
             this.pagedInventory = pagedInventory;
             this.inventoryView = inventoryView;
             this.player = player;
         }
 
-        public PagedInventory getPagedInventory() {
+        public IPagedInventory getPagedInventory() {
             return pagedInventory;
         }
 
