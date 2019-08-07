@@ -49,6 +49,14 @@ public interface IPagedInventory extends Iterable<Inventory> {
     boolean contains(Inventory inventory);
 
     /**
+     * Get a page. Should not edit the last row (navigation) of the inventory or it may break or have unintended behavior
+     * @param page The index the page is located, starting at 0
+     * @return The inventory at the specified index
+     * @throws ArrayIndexOutOfBoundsException The page specified is negative or is greater than or equal to what is returned by {@link IPagedInventory#getSize()}
+     */
+    Inventory getPage(int page);
+
+    /**
      * Add an inventory to the end of this paged inventory
      * @param inventory The inventory to add
      */
@@ -96,5 +104,11 @@ public interface IPagedInventory extends Iterable<Inventory> {
      * @param closeButton The new close button
      */
     void updateNavigation(ItemStack nextButton, ItemStack previousButton, ItemStack closeButton);
+
+    /**
+     * Get how many inventory pages there are
+     * @return How many inventory pages there are
+     */
+    int getSize();
 
 }

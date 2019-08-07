@@ -105,6 +105,14 @@ public class PagedInventory implements IPagedInventory {
      * {@inheritDoc}
      */
     @Override
+    public Inventory getPage(int page) {
+        return pages.get(page);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void addPage(Map<Integer, ItemStack> contents, String title, final int size) {
         Preconditions.checkArgument(size >= MIN_INV_SIZE, "Inventory size must be >= " + MIN_INV_SIZE);
         Inventory inventory = Bukkit.createInventory(null, size, title);
@@ -236,6 +244,14 @@ public class PagedInventory implements IPagedInventory {
             inventory.setItem(previous, previousButton);
             inventory.setItem(close, closeButton);
         });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getSize() {
+        return pages.size();
     }
 
     private void disperseViewers(List<HumanEntity> viewers, Integer fallbackIndex) {
