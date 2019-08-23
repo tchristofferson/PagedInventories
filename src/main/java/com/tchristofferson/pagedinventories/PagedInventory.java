@@ -88,8 +88,8 @@ public class PagedInventory implements IPagedInventory {
         if (pages.size() - 1 < index || index < 0)
             return false;
         Inventory inventory = pages.get(index);
-        registrar.register(player, this, inventory);
         player.openInventory(inventory);
+        registrar.register(player, this, inventory);
         return true;
     }
 
