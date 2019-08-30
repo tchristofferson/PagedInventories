@@ -43,7 +43,7 @@ public class PagedInventory implements IPagedInventory {
         if (success) {
             PagedInventorySwitchPageHandler.Handler handler = new PagedInventorySwitchPageHandler.Handler(
                     this, player.getOpenInventory(), player, PagedInventorySwitchPageHandler.PageAction.NEXT, index);
-            registrar.getSwitchHandlers().forEach(pagedInventorySwitchPageHandler -> pagedInventorySwitchPageHandler.handle(handler));
+            registrar.callSwitchHandlers(handler);
         }
 
         return success;
@@ -64,7 +64,7 @@ public class PagedInventory implements IPagedInventory {
         if (success) {
             PagedInventorySwitchPageHandler.Handler handler = new PagedInventorySwitchPageHandler.Handler(
                     this, player.getOpenInventory(), player, PagedInventorySwitchPageHandler.PageAction.PREVIOUS, index);
-            registrar.getSwitchHandlers().forEach(pagedInventorySwitchPageHandler -> pagedInventorySwitchPageHandler.handle(handler));
+            registrar.callSwitchHandlers(handler);
         }
 
         return success;
@@ -263,7 +263,7 @@ public class PagedInventory implements IPagedInventory {
             viewers.forEach(viewer -> {
                 PagedInventoryCloseHandler.Handler handler = new PagedInventoryCloseHandler.Handler(this, viewer.getOpenInventory(), (Player) viewer);
                 viewer.closeInventory();
-                registrar.getCloseHandlers().forEach(pagedInventoryCloseHandler -> pagedInventoryCloseHandler.handle(handler));
+                registrar.callCloseHandlers(handler);
             });
 
             return;
@@ -281,7 +281,7 @@ public class PagedInventory implements IPagedInventory {
     public boolean equals(Object obj) {
         if (obj == this)
             return true;
-        if (!(obj instanceof PagedInventory))
+        if (!obj.getClass().equals(PagedInventory.class))
             return false;
 
         PagedInventory inv = (PagedInventory) obj;

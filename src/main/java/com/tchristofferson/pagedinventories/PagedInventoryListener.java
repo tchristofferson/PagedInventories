@@ -51,7 +51,7 @@ class PagedInventoryListener implements Listener {
         }
 
         PagedInventoryClickHandler.Handler handler = new PagedInventoryClickHandler.Handler(pagedInventory, event);
-        registrar.getClickHandlers().forEach(pagedInventoryClickHandler -> pagedInventoryClickHandler.handle(handler));
+        registrar.callClickHandlers(handler);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -62,8 +62,9 @@ class PagedInventoryListener implements Listener {
 
         if (!registrar.unregisterSwitch(player)) {
             registrar.unregister(player);
-            PagedInventoryCloseHandler.Handler handler = new PagedInventoryCloseHandler.Handler(registrar.getOpenPagedInventories().get(player.getUniqueId()), event.getView(), player);
-            registrar.getCloseHandlers().forEach(pagedInventoryCloseHandler -> pagedInventoryCloseHandler.handle(handler));
+            IPagedInventory iPagedInventory = registrar.getOpenPagedInventories().get(player.getUniqueId());
+            PagedInventoryCloseHandler.Handler handler = new PagedInventoryCloseHandler.Handler(iPagedInventory, event.getView(), player);
+            registrar.callCloseHandlers(handler);
         }
     }
 

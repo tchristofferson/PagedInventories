@@ -15,56 +15,100 @@ public class InventoryRegistrar {
     private final Map<UUID, IPagedInventory> pagedInventoryRegistrar;
     private final List<UUID> switchingPages;
 
-    private final List<PagedInventoryClickHandler> clickHandlers;
-    private final List<PagedInventoryCloseHandler> closeHandlers;
-    private final List<PagedInventorySwitchPageHandler> switchHandlers;
+    private final Map<IPagedInventory, List<PagedInventoryClickHandler>> clickHandlers;
+    private final Map<IPagedInventory, List<PagedInventoryCloseHandler>> closeHandlers;
+    private final Map<IPagedInventory, List<PagedInventorySwitchPageHandler>> switchHandlers;
 
     InventoryRegistrar() {
         registrar = new HashMap<>();
         pagedInventoryRegistrar = new HashMap<>();
         switchingPages = new ArrayList<>();
 
-        clickHandlers = new ArrayList<>();
-        closeHandlers = new ArrayList<>();
-        switchHandlers = new ArrayList<>();
+        clickHandlers = new HashMap<>();
+        closeHandlers = new HashMap<>();
+        switchHandlers = new HashMap<>();
     }
 
     /**
-     * This will add a new click handler, {@link PagedInventoryClickHandler}
+     * This will add a new click handler for the specified IPagedInventory, {@link PagedInventoryClickHandler}
+     * @param iPagedInventory The IPagedInventory you want the handler to work with
      * @param pagedInventoryClickHandler The handler
      */
-    public void addClickHandler(PagedInventoryClickHandler pagedInventoryClickHandler) {
-        clickHandlers.add(pagedInventoryClickHandler);
+    public void addClickHandler(IPagedInventory iPagedInventory, PagedInventoryClickHandler pagedInventoryClickHandler) {
+        List<PagedInventoryClickHandler> handlers = clickHandlers.get(iPagedInventory);
+
+        if (handlers == null) {
+            handlers = new ArrayList<>();
+            handlers.add(pagedInventoryClickHandler);
+            clickHandlers.put(iPagedInventory, handlers);
+            return;
+        }
+
+        handlers.add(pagedInventoryClickHandler);
     }
 
-    List<PagedInventoryClickHandler> getClickHandlers() {
-        return new ArrayList<>(clickHandlers);
+    void callClickHandlers(PagedInventoryClickHandler.Handler handler) {
+        List<PagedInventoryClickHandler> handlers = clickHandlers.get(handler.getPagedInventory());
+
+        if (handlers == null || clickHandlers.isEmpty())
+            return;
+
+        handlers.forEach(pagedInventoryClickHandler -> pagedInventoryClickHandler.handle(handler));
     }
 
     /**
-     * This will add a new close handler, {@link PagedInventoryCloseHandler}
+     * This will add a new close handler for the specified IPagedInventory, {@link PagedInventoryCloseHandler}
+     * @param iPagedInventory The IPagedInventory you want the handler to work with
      * @param pagedInventoryCloseHandler The handler
      */
-    public void addCloseHandler(PagedInventoryCloseHandler pagedInventoryCloseHandler) {
-        closeHandlers.add(pagedInventoryCloseHandler);
+    public void addCloseHandler(IPagedInventory iPagedInventory, PagedInventoryCloseHandler pagedInventoryCloseHandler) {
+        List<PagedInventoryCloseHandler> handlers = closeHandlers.get(iPagedInventory);
+
+        if (handlers == null) {
+            handlers = new ArrayList<>();
+            handlers.add(pagedInventoryCloseHandler);
+            closeHandlers.put(iPagedInventory, handlers);
+            return;
+        }
+
+        handlers.add(pagedInventoryCloseHandler);
     }
 
-    List<PagedInventoryCloseHandler> getCloseHandlers() {
-        return new ArrayList<>(closeHandlers);
+    void callCloseHandlers(PagedInventoryCloseHandler.Handler handler) {
+        List<PagedInventoryCloseHandler> handlers = closeHandlers.get(handler.getPagedInventory());
+
+        if (handlers == null || handlers.isEmpty())
+            return;
+
+        handlers.forEach(pagedInventoryCloseHandler -> pagedInventoryCloseHandler.handle(handler));
     }
 
     /**
-     * This will add a new switch handler, {@link PagedInventorySwitchPageHandler}
+     * This will add a new switch handler for the specified IPagedInventory, {@link PagedInventorySwitchPageHandler}
+     * @param iPagedInventory The IPagedInventory you want the handler to work with
      * @param pagedInventorySwitchPageHandler The handler
      */
-    public void addSwitchHandler(PagedInventorySwitchPageHandler pagedInventorySwitchPageHandler) {
-        switchHandlers.add(pagedInventorySwitchPageHandler);
+    public void addSwitchHandler(IPagedInventory iPagedInventory, PagedInventorySwitchPageHandler pagedInventorySwitchPageHandler) {
+        List<PagedInventorySwitchPageHandler> handlers = switchHandlers.get(iPagedInventory);
+
+        if (handlers == null) {
+            handlers = new ArrayList<>();
+            handlers.add(pagedInventorySwitchPageHandler);
+            switchHandlers.put(iPagedInventory, handlers);
+            return;
+        }
+
+        handlers.add(pagedInventorySwitchPageHandler);
     }
 
-    List<PagedInventorySwitchPageHandler> getSwitchHandlers() {
-        return new ArrayList<>(switchHandlers);
-    }
+    void callSwitchHandlers(PagedInventorySwitchPageHandler.Handler handler) {
+        List<PagedInventorySwitchPageHandler> handlers = switchHandlers.get(handler.getPagedInventory());
 
+        if (handlers == null || handlers.isEmpty())
+            return;
+
+        handlers.forEach(pagedInventorySwitchPageHandler -> pagedInventorySwitchPageHandler.handle(handler));
+    }
 
     /**'
      * Registers that a player is switching between pages in a {@link IPagedInventory}
@@ -116,7 +160,7 @@ public class InventoryRegistrar {
     public boolean equals(Object obj) {
         if (obj == this)
             return true;
-        if (!(obj instanceof InventoryRegistrar))
+        if (!obj.getClass().equals(InventoryRegistrar.class))
             return false;
 
         InventoryRegistrar inventoryRegistrar = (InventoryRegistrar) obj;

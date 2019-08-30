@@ -23,7 +23,7 @@ public abstract class PagedInventoryClickHandler extends PagedInventoryHandler {
         public boolean equals(Object obj) {
             if (obj == this)
                 return true;
-            if (!(obj instanceof Handler))
+            if (!obj.getClass().equals(Handler.class))
                 return false;
 
             Handler handler = (Handler) obj;
