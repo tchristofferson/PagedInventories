@@ -40,10 +40,10 @@ Handlers are similar to events. In this example a PagedInventorySwitchHandler is
 
 Creation and registration:
 ```
-registrar.addSwitchHandler(new PagedInventorySwitchPageHandler() {
+registrar.addClickHandler(iPagedInventory, new PagedInventoryClickHandler() {
     @Override
     public void handle(Handler handler) {
-        System.out.println("\n\nSWITCH HANDLER\n\n");
+        //Handle
     }
 });
 ```
