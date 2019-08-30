@@ -4,8 +4,6 @@ import com.tchristofferson.pagedinventories.IPagedInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
-import java.util.Objects;
-
 public abstract class PagedInventoryClickHandler extends PagedInventoryHandler {
 
     public abstract void handle(PagedInventoryClickHandler.Handler handler);
@@ -28,11 +26,6 @@ public abstract class PagedInventoryClickHandler extends PagedInventoryHandler {
 
             Handler handler = (Handler) obj;
             return super.equals(obj) && event.equals(handler.event);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(getPagedInventory(), getInventoryView(), getPlayer().getUniqueId(), event);
         }
 
         public InventoryClickEvent getEvent() {

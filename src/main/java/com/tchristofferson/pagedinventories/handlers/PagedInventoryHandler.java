@@ -4,8 +4,6 @@ import com.tchristofferson.pagedinventories.IPagedInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 
-import java.util.Objects;
-
 public abstract class PagedInventoryHandler {
 
     PagedInventoryHandler() {
@@ -46,11 +44,6 @@ public abstract class PagedInventoryHandler {
             return pagedInventory.equals(handler.pagedInventory)
                     && inventoryView.equals(handler.inventoryView)
                     && player.getUniqueId().equals(handler.player.getUniqueId());
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(pagedInventory, inventoryView, player.getUniqueId());
         }
 
     }

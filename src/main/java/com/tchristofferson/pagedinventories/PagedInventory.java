@@ -288,9 +288,4 @@ public class PagedInventory implements IPagedInventory {
         return registrar.equals(inv.registrar) && pages.equals(inv.pages) && navigation.equals(inv.navigation);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(registrar, pages, navigation);
-    }
-
 }

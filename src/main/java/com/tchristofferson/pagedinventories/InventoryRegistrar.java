@@ -171,9 +171,4 @@ public class InventoryRegistrar {
                 && switchHandlers.equals(inventoryRegistrar.switchHandlers);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(registrar, pagedInventoryRegistrar, clickHandlers, closeHandlers, switchHandlers);
-    }
-
 }

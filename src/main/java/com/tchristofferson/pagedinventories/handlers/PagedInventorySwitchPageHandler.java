@@ -4,8 +4,6 @@ import com.tchristofferson.pagedinventories.IPagedInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 
-import java.util.Objects;
-
 public abstract class PagedInventorySwitchPageHandler extends PagedInventoryHandler {
 
     public abstract void handle(PagedInventorySwitchPageHandler.Handler handler);
@@ -32,11 +30,6 @@ public abstract class PagedInventorySwitchPageHandler extends PagedInventoryHand
             return super.equals(handler)
                     && pageAction == handler.pageAction
                     && indexFrom == handler.indexFrom;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(getPagedInventory(), getInventoryView(), getPlayer().getUniqueId(), pageAction, indexFrom);
         }
 
         public PageAction getPageAction() {
