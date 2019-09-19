@@ -2,8 +2,6 @@ package com.tchristofferson.pagedinventories;
 
 import com.tchristofferson.pagedinventories.handlers.PagedInventoryClickHandler;
 import com.tchristofferson.pagedinventories.handlers.PagedInventoryCloseHandler;
-import com.tchristofferson.pagedinventories.handlers.PagedInventoryGlobalClickHandler;
-import com.tchristofferson.pagedinventories.handlers.PagedInventoryGlobalCloseHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -52,9 +50,9 @@ class PagedInventoryListener implements Listener {
             return;
         }
 
-        PagedInventoryGlobalClickHandler.Handler handler = new PagedInventoryGlobalClickHandler.Handler(pagedInventory, event);
-        registrar.callGlobalClickHandlers(handler);
-        pagedInventory.callClickHandlers(handler);
+        PagedInventoryClickHandler.Handler globalHandler = new PagedInventoryClickHandler.Handler(pagedInventory, event);
+        registrar.callGlobalClickHandlers(globalHandler);
+        pagedInventory.callClickHandlers(globalHandler);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -66,7 +64,7 @@ class PagedInventoryListener implements Listener {
         if (!registrar.unregisterSwitch(player)) {
             registrar.unregister(player);
             IPagedInventory iPagedInventory = registrar.getOpenPagedInventories().get(player.getUniqueId());
-            PagedInventoryGlobalCloseHandler.Handler handler = new PagedInventoryGlobalCloseHandler.Handler(iPagedInventory, event.getView(), player);
+            PagedInventoryCloseHandler.Handler handler = new PagedInventoryCloseHandler.Handler(iPagedInventory, event.getView(), player);
             registrar.callGlobalCloseHandlers(handler);
             iPagedInventory.callCloseHandlers(handler);
         }

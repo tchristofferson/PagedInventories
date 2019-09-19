@@ -130,7 +130,7 @@ public class PagedInventory implements IPagedInventory {
         boolean success = open(player, index + 1);
 
         if (success) {
-            PagedInventoryGlobalSwitchPageHandler.Handler handler = new PagedInventoryGlobalSwitchPageHandler.Handler(
+            PagedInventorySwitchPageHandler.Handler handler = new PagedInventorySwitchPageHandler.Handler(
                     this, player.getOpenInventory(), player, PagedInventorySwitchPageHandler.PageAction.NEXT, index);
             registrar.callGlobalSwitchHandlers(handler);
             callSwitchHandlers(handler);
@@ -152,7 +152,7 @@ public class PagedInventory implements IPagedInventory {
         boolean success = open(player, index - 1);
 
         if (success) {
-            PagedInventoryGlobalSwitchPageHandler.Handler handler = new PagedInventoryGlobalSwitchPageHandler.Handler(
+            PagedInventorySwitchPageHandler.Handler handler = new PagedInventorySwitchPageHandler.Handler(
                     this, player.getOpenInventory(), player, PagedInventorySwitchPageHandler.PageAction.PREVIOUS, index);
             registrar.callGlobalSwitchHandlers(handler);
             callSwitchHandlers(handler);
@@ -352,7 +352,7 @@ public class PagedInventory implements IPagedInventory {
 
         if (fallbackIndex == null) {
             viewers.forEach(viewer -> {
-                PagedInventoryGlobalCloseHandler.Handler handler = new PagedInventoryGlobalCloseHandler.Handler(this, viewer.getOpenInventory(), ((Player) viewer));
+                PagedInventoryCloseHandler.Handler handler = new PagedInventoryCloseHandler.Handler(this, viewer.getOpenInventory(), ((Player) viewer));
                 viewer.closeInventory();
                 registrar.callGlobalCloseHandlers(handler);
                 callCloseHandlers(handler);

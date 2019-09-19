@@ -1,5 +1,6 @@
 package com.tchristofferson.pagedinventories.handlers;
 
+import com.tchristofferson.pagedinventories.IPagedInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -11,8 +12,8 @@ public abstract class PagedInventoryClickHandler extends PagedInventoryHandler {
 
         private final InventoryClickEvent event;
 
-        public Handler(InventoryClickEvent event) {
-            super(event.getView(), (Player) event.getWhoClicked());
+        public Handler(IPagedInventory iPagedInventory, InventoryClickEvent event) {
+            super(iPagedInventory, event.getView(), (Player) event.getWhoClicked());
             this.event = event;
         }
 

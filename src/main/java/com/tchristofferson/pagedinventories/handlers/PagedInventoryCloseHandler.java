@@ -1,5 +1,6 @@
 package com.tchristofferson.pagedinventories.handlers;
 
+import com.tchristofferson.pagedinventories.IPagedInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 
@@ -9,8 +10,8 @@ public abstract class PagedInventoryCloseHandler extends PagedInventoryHandler {
 
     public static class Handler extends PagedInventoryHandler.Handler {
 
-        public Handler(InventoryView inventoryView, Player player) {
-            super(inventoryView, player);
+        public Handler(IPagedInventory iPagedInventory, InventoryView inventoryView, Player player) {
+            super(iPagedInventory, inventoryView, player);
         }
 
     }
