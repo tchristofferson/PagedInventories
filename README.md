@@ -40,7 +40,7 @@ Handlers are similar to events. In this example a PagedInventorySwitchHandler is
 
 Creation and registration:
 ```
-iPagedInventory.addClickHandler(new PagedInventoryClickHandler() {
+iPagedInventory.addHandler(new PagedInventoryClickHandler() {
     //Handle the click here
 });
 ```
