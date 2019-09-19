@@ -18,7 +18,7 @@ Is on Maven Central
 <dependency>
     <groupId>com.tchristofferson.pagedinventories</groupId>
     <artifactId>PagedInventories</artifactId>
-    <version>1.5-SNAPSHOT</version>
+    <version>2.0-SNAPSHOT</version>
 </dependency>
 ```
 ### How to use
@@ -40,10 +40,7 @@ Handlers are similar to events. In this example a PagedInventorySwitchHandler is
 
 Creation and registration:
 ```
-registrar.addClickHandler(iPagedInventory, new PagedInventoryClickHandler() {
-    @Override
-    public void handle(Handler handler) {
-        //Handle
-    }
+iPagedInventory.addClickHandler(new PagedInventoryClickHandler() {
+    //Handle the click here
 });
 ```
