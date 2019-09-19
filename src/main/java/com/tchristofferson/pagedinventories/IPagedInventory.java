@@ -17,7 +17,7 @@ public interface IPagedInventory extends Iterable<Inventory> {
      * Add a click handler
      * @param handler The handler
      */
-    void addClickHandler(PagedInventoryClickHandler handler);
+    void addHandler(PagedInventoryClickHandler handler);
 
     /**
      * Call the click handlers. This method is called automatically when a player clicks a paged inventory
@@ -35,7 +35,7 @@ public interface IPagedInventory extends Iterable<Inventory> {
      * Add a close handler
      * @param handler The handler
      */
-    void addCloseHandler(PagedInventoryCloseHandler handler);
+    void addHandler(PagedInventoryCloseHandler handler);
 
     /**
      * Call the close handlers. This method is called automatically when a player clicks a paged inventory
@@ -53,7 +53,7 @@ public interface IPagedInventory extends Iterable<Inventory> {
      * Add a switch page handler
      * @param handler The handler
      */
-    void addSwitchHandler(PagedInventorySwitchPageHandler handler);
+    void addHandler(PagedInventorySwitchPageHandler handler);
 
     /**
      * Call the switch page handlers. This method is called automatically when a player clicks a paged inventory

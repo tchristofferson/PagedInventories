@@ -1,5 +1,6 @@
 package com.tchristofferson.pagedinventories;
 
+import com.tchristofferson.pagedinventories.handlers.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
@@ -14,10 +15,18 @@ public class InventoryRegistrar {
     private final Map<UUID, IPagedInventory> pagedInventoryRegistrar;//Player's with an IPagedInventory open
     private final List<UUID> switchingPages;//Players that are currently switching pages
 
+    private final List<PagedInventoryGlobalClickHandler> globalClickHandlers;
+    private final List<PagedInventoryGlobalCloseHandler> globalCloseHandlers;
+    private final List<PagedInventoryGlobalSwitchPageHandler> globalSwitchHandlers;
+
     InventoryRegistrar() {
         registrar = new HashMap<>();
         pagedInventoryRegistrar = new HashMap<>();
         switchingPages = new ArrayList<>();
+
+        globalClickHandlers = new ArrayList<>(3);
+        globalCloseHandlers = new ArrayList<>(3);
+        globalSwitchHandlers = new ArrayList<>(3);
     }
 
     /**'
@@ -65,6 +74,78 @@ public class InventoryRegistrar {
      */
     public Map<UUID, IPagedInventory> getOpenPagedInventories() {
         return new HashMap<>(pagedInventoryRegistrar);
+    }
+
+    /**
+     * Add a global click handler
+     * Whenever any paged inventory gets clicked the specified {@link PagedInventoryGlobalClickHandler#handle(PagedInventoryClickHandler.Handler)} will be called
+     * The global handler is called before the paged inventory specific handler(s)
+     * @param handler The handler
+     */
+    public void addGlobalHandler(PagedInventoryGlobalClickHandler handler) {
+        globalClickHandlers.add(handler);
+    }
+
+    /**
+     * Add a global close handler
+     * Whenever any paged inventory gets closed the specified {@link PagedInventoryGlobalCloseHandler#handle(PagedInventoryCloseHandler.Handler)} will be called
+     * The global handler is called before the paged inventory specific handler(s)
+     * @param handler The handler
+     */
+    public void addGlobalHandler(PagedInventoryGlobalCloseHandler handler) {
+        globalCloseHandlers.add(handler);
+    }
+
+    /**
+     * Add a global switch page handler
+     * Whenever any player switches pages the specified {@link PagedInventoryGlobalSwitchPageHandler#handle(PagedInventorySwitchPageHandler.Handler)} will be called
+     * The global handler is called before the paged inventory specific handler(s)
+     * @param handler The handler
+     */
+    public void addGlobalHandler(PagedInventoryGlobalSwitchPageHandler handler) {
+        globalSwitchHandlers.add(handler);
+    }
+
+    void callGlobalClickHandlers(PagedInventoryGlobalClickHandler.Handler handler) {
+        globalClickHandlers.forEach(pagedInventoryGlobalClickHandler -> pagedInventoryGlobalClickHandler.handle(handler));
+    }
+
+    /**
+     * Clear global click handlers
+     * To clear all global handlers see {@link InventoryRegistrar#clearAllGlobalHandlers()}
+     */
+    public void clearGlobalClickHandlers() {
+        globalClickHandlers.clear();
+    }
+
+    void callGlobalCloseHandlers(PagedInventoryGlobalCloseHandler.Handler handler) {
+        globalCloseHandlers.forEach(pagedInventoryGlobalHandler -> pagedInventoryGlobalHandler.handle(handler));
+    }
+
+    /**
+     * Clear global close handlers
+     * To clear all global handlers see {@link InventoryRegistrar#clearAllGlobalHandlers()}
+     */
+    public void clearGlobalCloseHandlers() {
+        globalCloseHandlers.clear();
+    }
+
+    void callGlobalSwitchHandlers(PagedInventoryGlobalSwitchPageHandler.Handler handler) {
+        globalSwitchHandlers.forEach(pagedInventoryGlobalSwitchHandler -> pagedInventoryGlobalSwitchHandler.handle(handler));
+    }
+
+    /**
+     * Clear global switch page handlers
+     * To clear all global handlers see {@link InventoryRegistrar#clearAllGlobalHandlers()}
+     */
+    public void clearGlobalSwitchHandlers() {
+        globalSwitchHandlers.clear();
+    }
+
+    public void clearAllGlobalHandlers() {
+        clearGlobalClickHandlers();
+        clearGlobalCloseHandlers();
+        clearGlobalSwitchHandlers();
     }
 
     @Override
