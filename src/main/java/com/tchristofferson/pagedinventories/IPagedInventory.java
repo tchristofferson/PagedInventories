@@ -1,5 +1,8 @@
 package com.tchristofferson.pagedinventories;
 
+import com.tchristofferson.pagedinventories.handlers.PagedInventoryClickHandler;
+import com.tchristofferson.pagedinventories.handlers.PagedInventoryCloseHandler;
+import com.tchristofferson.pagedinventories.handlers.PagedInventorySwitchPageHandler;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -9,6 +12,65 @@ import java.util.Map;
 public interface IPagedInventory extends Iterable<Inventory> {
 
     int MIN_INV_SIZE = 18;
+
+    /**
+     * Add a click handler
+     * @param handler The handler
+     */
+    void addClickHandler(PagedInventoryClickHandler handler);
+
+    /**
+     * Call the click handlers. This method is called automatically when a player clicks a paged inventory
+     * @param handler The handler
+     */
+    void callClickHandlers(PagedInventoryClickHandler.Handler handler);
+
+    /**
+     * Clears all click handlers
+     * To clear all handlers see {@link IPagedInventory#clearAllHandlers()}
+     */
+    void clearClickHandlers();
+
+    /**
+     * Add a close handler
+     * @param handler The handler
+     */
+    void addCloseHandler(PagedInventoryCloseHandler handler);
+
+    /**
+     * Call the close handlers. This method is called automatically when a player clicks a paged inventory
+     * @param handler The handler
+     */
+    void callCloseHandlers(PagedInventoryCloseHandler.Handler handler);
+
+    /**
+     * Clears all close handlers
+     * To clear all handlers see {@link IPagedInventory#clearAllHandlers()}
+     */
+    void clearCloseHandlers();
+
+    /**
+     * Add a switch page handler
+     * @param handler The handler
+     */
+    void addSwitchHandler(PagedInventorySwitchPageHandler handler);
+
+    /**
+     * Call the switch page handlers. This method is called automatically when a player clicks a paged inventory
+     * @param handler The handler
+     */
+    void callSwitchHandlers(PagedInventorySwitchPageHandler.Handler handler);
+
+    /**
+     * Clears all switch page handlers
+     * To clear all handlers see {@link IPagedInventory#clearAllHandlers()}
+     */
+    void clearSwitchHandlers();
+
+    /**
+     * Clears all handlers (click, close, switch)
+     */
+    void clearAllHandlers();
 
     /**
      * Opens the first page of this paged inventory

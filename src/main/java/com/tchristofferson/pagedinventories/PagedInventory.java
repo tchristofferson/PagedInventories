@@ -1,6 +1,7 @@
 package com.tchristofferson.pagedinventories;
 
 import com.google.common.base.Preconditions;
+import com.tchristofferson.pagedinventories.handlers.PagedInventoryClickHandler;
 import com.tchristofferson.pagedinventories.handlers.PagedInventoryCloseHandler;
 import com.tchristofferson.pagedinventories.handlers.PagedInventorySwitchPageHandler;
 import com.tchristofferson.pagedinventories.utils.InventoryUtil;
@@ -18,6 +19,10 @@ public class PagedInventory implements IPagedInventory {
     private final List<Inventory> pages;
     private final Map<NavigationType, ItemStack> navigation;
 
+    private final List<PagedInventoryClickHandler> clickHandlers;
+    private final List<PagedInventoryCloseHandler> closeHandlers;
+    private final List<PagedInventorySwitchPageHandler> switchHandlers;
+
     protected PagedInventory(InventoryRegistrar registrar, ItemStack nextButton, ItemStack previousButton, ItemStack closeButton) {
         this.registrar = registrar;
         pages = new ArrayList<>();
@@ -26,6 +31,92 @@ public class PagedInventory implements IPagedInventory {
         navigation.put(NavigationType.NEXT, nextButton);
         navigation.put(NavigationType.PREVIOUS, previousButton);
         navigation.put(NavigationType.CLOSE, closeButton);
+
+        clickHandlers = new ArrayList<>();
+        closeHandlers = new ArrayList<>();
+        switchHandlers = new ArrayList<>();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addClickHandler(PagedInventoryClickHandler handler) {
+        clickHandlers.add(handler);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void callClickHandlers(PagedInventoryClickHandler.Handler handler) {
+        clickHandlers.forEach(pagedInventoryClickHandler -> pagedInventoryClickHandler.handle(handler));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clearClickHandlers() {
+        clickHandlers.clear();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addCloseHandler(PagedInventoryCloseHandler handler) {
+        closeHandlers.add(handler);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void callCloseHandlers(PagedInventoryCloseHandler.Handler handler) {
+        closeHandlers.forEach(pagedInventoryCloseHandler -> pagedInventoryCloseHandler.handle(handler));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clearCloseHandlers() {
+        closeHandlers.clear();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addSwitchHandler(PagedInventorySwitchPageHandler handler) {
+        switchHandlers.add(handler);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void callSwitchHandlers(PagedInventorySwitchPageHandler.Handler handler) {
+        switchHandlers.forEach(pagedInventorySwitchPageHandler -> pagedInventorySwitchPageHandler.handle(handler));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clearSwitchHandlers() {
+        switchHandlers.clear();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clearAllHandlers() {
+        clearClickHandlers();
+        clearCloseHandlers();
+        clearSwitchHandlers();
     }
 
     /**
@@ -42,8 +133,8 @@ public class PagedInventory implements IPagedInventory {
 
         if (success) {
             PagedInventorySwitchPageHandler.Handler handler = new PagedInventorySwitchPageHandler.Handler(
-                    this, player.getOpenInventory(), player, PagedInventorySwitchPageHandler.PageAction.NEXT, index);
-            registrar.callSwitchHandlers(handler);
+                    player.getOpenInventory(), player, PagedInventorySwitchPageHandler.PageAction.NEXT, index);
+            callSwitchHandlers(handler);
         }
 
         return success;
@@ -63,8 +154,8 @@ public class PagedInventory implements IPagedInventory {
 
         if (success) {
             PagedInventorySwitchPageHandler.Handler handler = new PagedInventorySwitchPageHandler.Handler(
-                    this, player.getOpenInventory(), player, PagedInventorySwitchPageHandler.PageAction.PREVIOUS, index);
-            registrar.callSwitchHandlers(handler);
+                    player.getOpenInventory(), player, PagedInventorySwitchPageHandler.PageAction.PREVIOUS, index);
+            callSwitchHandlers(handler);
         }
 
         return success;
@@ -261,9 +352,9 @@ public class PagedInventory implements IPagedInventory {
 
         if (fallbackIndex == null) {
             viewers.forEach(viewer -> {
-                PagedInventoryCloseHandler.Handler handler = new PagedInventoryCloseHandler.Handler(this, viewer.getOpenInventory(), (Player) viewer);
+                PagedInventoryCloseHandler.Handler handler = new PagedInventoryCloseHandler.Handler(viewer.getOpenInventory(), (Player) viewer);
                 viewer.closeInventory();
-                registrar.callCloseHandlers(handler);
+                callCloseHandlers(handler);
             });
 
             return;
