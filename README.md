@@ -16,7 +16,7 @@ Is on Maven Central
 ```
 ```
 <dependency>
-    <groupId>com.tchristofferson.pagedinventories</groupId>
+    <groupId>com.tchristofferson</groupId>
     <artifactId>PagedInventories</artifactId>
     <version>2.0-SNAPSHOT</version>
 </dependency>
