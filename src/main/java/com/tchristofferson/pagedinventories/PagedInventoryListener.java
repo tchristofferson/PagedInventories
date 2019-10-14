@@ -62,8 +62,8 @@ class PagedInventoryListener implements Listener {
             return;
 
         if (!registrar.unregisterSwitch(player)) {
-            registrar.unregister(player);
             IPagedInventory iPagedInventory = registrar.getOpenPagedInventories().get(player.getUniqueId());
+            registrar.unregister(player);
             PagedInventoryCloseHandler.Handler handler = new PagedInventoryCloseHandler.Handler(iPagedInventory, event.getView(), player);
             registrar.callGlobalCloseHandlers(handler);
             iPagedInventory.callCloseHandlers(handler);
