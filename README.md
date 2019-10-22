@@ -48,6 +48,7 @@ CustomNavigationItem navigationItem = new CustomNavigationItem(new ItemStack(Mat
     }
 };
 
+navigationButtons.put(2, navigationItem);
 PagedInventory pagedInventory = api.createPagedInventory(navigationButtons);
 ```
 Add pages like so:
