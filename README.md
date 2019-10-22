@@ -18,7 +18,7 @@ Is on Maven Central
 <dependency>
     <groupId>com.tchristofferson</groupId>
     <artifactId>PagedInventories</artifactId>
-    <version>2.0-SNAPSHOT</version>
+    <version>2.1-SNAPSHOT</version>
 </dependency>
 ```
 ### How to use
@@ -28,7 +28,27 @@ PagedInventoryAPI api = new PagedInventoryAPI(plugin);
 ```
 Create a PagedInventory like so (the buttons are item stacks you want to use for navigation buttons between pages):
 ```
-PagedInventory pagedInventory = api.createPagedInventory(nextButton, previousButton, closeButton);
+//key=inventory slot, 0 - 8 only
+Map<Integer, NavigationItem> navigationButtons = new HashMap<>();
+navigationButtons.put(0, new PreviousNavigationItem(new ItemStack(Material.PLAYER_HEAD)));
+navigationButtons.put(4, new CloseNavigationItem(new ItemStack(Material.BARRIER)));
+navigationButtons.put(8, new NextNavigationItem(new ItemStack(Material.PLAYER_HEAD)));
+
+//Custom navigation buttons
+CustomNavigationItem navigationItem = new CustomNavigationItem(new ItemStack(Material.BOOK)) {
+    @Override
+    public void handleClick(PagedInventoryCustomNavigationHandler handler) {
+        //Handle the click here
+
+        //Page modifier is used to modify the items in the inventory.
+        //It is used to prevent developers from modifying the inventories navigation row.
+        PageModifier pageModifier = handler.getPageModifier();
+        pageModifier.getItem(0);
+        pageModifier.setItem(44, new ItemStack(Material.BOOK));
+    }
+};
+
+PagedInventory pagedInventory = api.createPagedInventory(navigationButtons);
 ```
 Add pages like so:
 ```
