@@ -1,8 +1,10 @@
 package com.tchristofferson.pagedinventories;
 
+import com.tchristofferson.pagedinventories.navigationitems.NavigationItem;
 import org.bukkit.Bukkit;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+
+import java.util.Map;
 
 public class PagedInventoryAPI {
 
@@ -14,14 +16,12 @@ public class PagedInventoryAPI {
     }
 
     /**
-     * Creates a new {@link IPagedInventory}
-     * @param nextButton The next button
-     * @param previousButton The previous button
-     * @param closeButton The close button
+     * Create a new {@link IPagedInventory}
+     * @param navigation The navigation for the paged inventory. Must contain next, previous, and close buttons
      * @return The newly created {@link IPagedInventory}
      */
-    public IPagedInventory createPagedInventory(ItemStack nextButton, ItemStack previousButton, ItemStack closeButton) {
-        return new PagedInventory(registrar, nextButton, previousButton, closeButton);
+    public IPagedInventory createPagedInventory(Map<Integer, NavigationItem> navigation) {
+        return new PagedInventory(registrar, navigation);
     }
 
     /**

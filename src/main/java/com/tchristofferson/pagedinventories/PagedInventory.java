@@ -2,6 +2,8 @@ package com.tchristofferson.pagedinventories;
 
 import com.google.common.base.Preconditions;
 import com.tchristofferson.pagedinventories.handlers.*;
+import com.tchristofferson.pagedinventories.navigationitems.NavigationItem;
+import com.tchristofferson.pagedinventories.navigationitems.NavigationItemCloneable;
 import com.tchristofferson.pagedinventories.utils.InventoryUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
@@ -11,28 +13,24 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
-public class PagedInventory implements IPagedInventory {
+class PagedInventory implements IPagedInventory {
 
     private final InventoryRegistrar registrar;
     private final List<Inventory> pages;
-    private final Map<NavigationType, ItemStack> navigation;
+    private final Map<Integer, NavigationItem> navigation;
 
     private final List<PagedInventoryClickHandler> clickHandlers;
     private final List<PagedInventoryCloseHandler> closeHandlers;
     private final List<PagedInventorySwitchPageHandler> switchHandlers;
 
-    protected PagedInventory(InventoryRegistrar registrar, ItemStack nextButton, ItemStack previousButton, ItemStack closeButton) {
+    protected PagedInventory(InventoryRegistrar registrar, Map<Integer, NavigationItem> navigation) {
+        Preconditions.checkArgument(containsRequiredNavigation(navigation.values()));
         this.registrar = registrar;
-        pages = new ArrayList<>();
-
-        navigation = new HashMap<>(3);
-        navigation.put(NavigationType.NEXT, nextButton);
-        navigation.put(NavigationType.PREVIOUS, previousButton);
-        navigation.put(NavigationType.CLOSE, closeButton);
-
-        clickHandlers = new ArrayList<>(3);
-        closeHandlers = new ArrayList<>(3);
-        switchHandlers = new ArrayList<>(3);
+        this.pages = new ArrayList<>();
+        this.navigation = navigation;
+        this.clickHandlers = new ArrayList<>(3);
+        this.closeHandlers = new ArrayList<>(3);
+        this.switchHandlers = new ArrayList<>(3);
     }
 
     /**
@@ -117,6 +115,11 @@ public class PagedInventory implements IPagedInventory {
         clearSwitchHandlers();
     }
 
+    @Override
+    public PageModifier getPageModifier(int index) {
+        return new PageModifier(pages.get(index));
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -184,20 +187,9 @@ public class PagedInventory implements IPagedInventory {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public boolean contains(Inventory inventory) {
-        return pages.contains(inventory);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Inventory getPage(int page) {
-        return pages.get(page);
+    public int indexOf(Inventory inventory) {
+        return pages.indexOf(inventory);
     }
 
     /**
@@ -238,12 +230,16 @@ public class PagedInventory implements IPagedInventory {
         }
 
         if (!pages.isEmpty()) {
-            inventory.setItem(InventoryUtil.getNavigationSlot(NavigationType.PREVIOUS, inventory.getSize()), navigation.get(NavigationType.PREVIOUS));
-            Inventory secondToLast = pages.get(pages.size() - 1);
-            secondToLast.setItem(InventoryUtil.getNavigationSlot(NavigationType.NEXT, secondToLast.getSize()), navigation.get(NavigationType.NEXT));
+            Map.Entry<Integer, NavigationItem> previousEntry = getNavigationItem(NavigationType.PREVIOUS);
+            Map.Entry<Integer, NavigationItem> nextEntry = getNavigationItem(NavigationType.NEXT);
+
+            inventory.setItem(previousEntry.getKey(), previousEntry.getValue().getItemStack());
+            Inventory currentLast = pages.get(pages.size() - 1);
+            currentLast.setItem(nextEntry.getKey(), nextEntry.getValue().getItemStack());
         }
 
-        inventory.setItem(InventoryUtil.getNavigationSlot(NavigationType.CLOSE, inventory.getSize()), navigation.get(NavigationType.CLOSE));
+        Map.Entry<Integer, NavigationItem> closeEntry = getNavigationItem(NavigationType.CLOSE);
+        inventory.setItem(closeEntry.getKey(), closeEntry.getValue().getItemStack());
         pages.add(inventory);
     }
 
@@ -294,47 +290,53 @@ public class PagedInventory implements IPagedInventory {
      * {@inheritDoc}
      */
     @Override
-    public Map<NavigationType, ItemStack> getNavigation() {
-        return new HashMap<>(navigation);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void updateNavigation(NavigationType navigationType, ItemStack newButton) {
-        if (navigationType == null)
-            throw new NullPointerException("NavigationType cannot be null");
-
-        navigation.put(navigationType, newButton);
-
-        if (pages.isEmpty())
-            return;
-
-        pages.forEach(inventory -> inventory.setItem(InventoryUtil.getNavigationSlot(navigationType, inventory.getSize()), newButton));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void updateNavigation(ItemStack nextButton, ItemStack previousButton, ItemStack closeButton) {
-        navigation.put(NavigationType.NEXT, nextButton);
-        navigation.put(NavigationType.PREVIOUS, previousButton);
-        navigation.put(NavigationType.CLOSE, closeButton);
-
-        if (pages.isEmpty())
-            return;
-
-        pages.forEach(inventory -> {
-            int invSize = inventory.getSize();
-            int next = InventoryUtil.getNavigationSlot(NavigationType.NEXT, invSize);
-            int previous = InventoryUtil.getNavigationSlot(NavigationType.PREVIOUS, invSize);
-            int close = InventoryUtil.getNavigationSlot(NavigationType.CLOSE, invSize);
-            inventory.setItem(next, nextButton);
-            inventory.setItem(previous, previousButton);
-            inventory.setItem(close, closeButton);
+    public Map<Integer, NavigationItem> getNavigation() {
+        Map<Integer, NavigationItem> nav = new HashMap<>(navigation.size());
+        navigation.forEach((slot, navigationItem) -> {
+            if (navigationItem instanceof NavigationItemCloneable) {
+                nav.put(slot, ((NavigationItemCloneable) navigationItem).clone());
+            } else {
+                nav.put(slot, navigationItem);
+            }
         });
+
+        return nav;
+    }
+
+    @Override
+    public NavigationItem getNavigationItem(int slot) {
+        return navigation.get(slot);
+    }
+
+    @Override
+    public int getNavigationItem(NavigationItem navigationItem) {
+        for (Map.Entry<Integer, NavigationItem> entry : navigation.entrySet()) {
+            if (entry.getValue().equals(navigationItem))
+                return entry.getKey();
+        }
+
+        return -1;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setNavigation(Integer slot, NavigationItem navigationItem) {
+        validateNavSlot(slot);
+        NavigationType type = navigationItem.getNavigationType();
+        Preconditions.checkArgument(type == NavigationType.CUSTOM, "You can't add another " + type.toString().toLowerCase() + " navigation item!");
+
+        NavigationItem oldItem = navigation.remove(slot);
+        if (oldItem != null) {
+            Preconditions.checkArgument(oldItem.getNavigationType() == NavigationType.CUSTOM, "Can't replace non-custom navigation items!");
+        }
+
+        navigation.put(slot, navigationItem);
+        for (Inventory page : pages) {
+            page.setItem(slot, navigationItem.getItemStack());
+        }
     }
 
     /**
@@ -365,11 +367,6 @@ public class PagedInventory implements IPagedInventory {
     }
 
     @Override
-    public Iterator<Inventory> iterator() {
-        return new ArrayList<>(pages).iterator();
-    }
-
-    @Override
     public boolean equals(Object obj) {
         if (obj == this)
             return true;
@@ -380,4 +377,40 @@ public class PagedInventory implements IPagedInventory {
         return registrar.equals(inv.registrar) && pages.equals(inv.pages) && navigation.equals(inv.navigation);
     }
 
+    private boolean containsRequiredNavigation(Collection<NavigationItem> navigationItems) {
+        boolean hasNext = false, hasPrevious = false, hasClose = false;
+
+        for (NavigationItem navigationItem : navigationItems) {
+            NavigationType type = navigationItem.getNavigationType();
+
+            if (type == NavigationType.CUSTOM)
+                continue;
+
+            if (type == NavigationType.NEXT) {
+                hasNext = true;
+            } else if (type == NavigationType.PREVIOUS) {
+                hasPrevious = true;
+            } else {
+                hasClose = true;
+            }
+
+            if (hasNext && hasPrevious && hasClose)
+                return true;
+        }
+
+        return false;
+    }
+
+    private Map.Entry<Integer, NavigationItem> getNavigationItem(NavigationType navigationType) {
+        for (Map.Entry<Integer, NavigationItem> entry : navigation.entrySet()) {
+            if (entry.getValue().getNavigationType() == navigationType)
+                return new AbstractMap.SimpleImmutableEntry<>(entry);
+        }
+
+        throw new IllegalStateException("Navigation doesn't have next button!");
+    }
+
+    private void validateNavSlot(int slot) {
+        Preconditions.checkArgument(slot >= 0 && slot <= 8, "Slot must be between 0 and 8");
+    }
 }

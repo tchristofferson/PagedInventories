@@ -3,13 +3,14 @@ package com.tchristofferson.pagedinventories;
 import com.tchristofferson.pagedinventories.handlers.PagedInventoryClickHandler;
 import com.tchristofferson.pagedinventories.handlers.PagedInventoryCloseHandler;
 import com.tchristofferson.pagedinventories.handlers.PagedInventorySwitchPageHandler;
+import com.tchristofferson.pagedinventories.navigationitems.NavigationItem;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 
-public interface IPagedInventory extends Iterable<Inventory> {
+public interface IPagedInventory {
 
     int MIN_INV_SIZE = 18;
 
@@ -73,6 +74,13 @@ public interface IPagedInventory extends Iterable<Inventory> {
     void clearAllHandlers();
 
     /**
+     * Get a page modifier for the page at the specified index
+     * @param index The page modifier for the page at this index
+     * @return The page modifier for the page at the specified index
+     */
+    PageModifier getPageModifier(int index);
+
+    /**
      * Opens the first page of this paged inventory
      * @param player The player opening the paged inventory
      * @return {@code true} if successful, {@code false} otherwise
@@ -108,15 +116,16 @@ public interface IPagedInventory extends Iterable<Inventory> {
      * @param inventory The inventory to check for
      * @return {@code true} if this paged inventory contains this inventory, {@code false} otherwise
      */
-    boolean contains(Inventory inventory);
+    default boolean contains(Inventory inventory) {
+        return indexOf(inventory) != -1;
+    }
 
     /**
-     * Get a page. Should not edit the last row (navigation) of the inventory or it may break or have unintended behavior
-     * @param page The index the page is located, starting at 0
-     * @return The inventory at the specified index
-     * @throws ArrayIndexOutOfBoundsException The page specified is negative or is greater than or equal to what is returned by {@link IPagedInventory#getSize()}
+     * Get the index of the specified page
+     * @param inventory The inventory to get the index of
+     * @return The index, or -1 if it is not found
      */
-    Inventory getPage(int page);
+    int indexOf(Inventory inventory);
 
     /**
      * Add an inventory to the end of this paged inventory
@@ -150,22 +159,28 @@ public interface IPagedInventory extends Iterable<Inventory> {
      * Get the navigation buttons of this paged inventory
      * @return A Map of the navigation where the key is the {@link NavigationType} and the value is the item stack representing the button
      */
-    Map<NavigationType, ItemStack> getNavigation();
+    Map<Integer, NavigationItem> getNavigation();
+
+    /**
+     * Get the navigation item at the specified slot
+     * @param slot The slot with the navigation item. Use a slot from 0 to 8
+     * @return The {@link NavigationItem} at the specified slot in the navigation row
+     */
+    NavigationItem getNavigationItem(int slot);
+
+    /**
+     * Get the slot of the specified navigation item
+     * @param navigationItem The {@link NavigationItem} to get the slot of
+     * @return The slot, from 0 to 8, in the navigation row, or -1 if it wasn't found
+     */
+    int getNavigationItem(NavigationItem navigationItem);
 
     /**
      * Update a navigation button of this paged inventory
-     * @param navigationType The type of button
-     * @param newButton The item stack to replace the specified button
+     * @param slot The slot in the bottom bar of the page (0-8)
+     * @param navigationItem The item to replace the item in the specified slot
      */
-    void updateNavigation(NavigationType navigationType, ItemStack newButton);
-
-    /**
-     * Update the navigation buttons of this paged inventory
-     * @param nextButton The new next button
-     * @param previousButton The new previous button
-     * @param closeButton The new close button
-     */
-    void updateNavigation(ItemStack nextButton, ItemStack previousButton, ItemStack closeButton);
+    void setNavigation(Integer slot, NavigationItem navigationItem);
 
     /**
      * Get how many inventory pages there are

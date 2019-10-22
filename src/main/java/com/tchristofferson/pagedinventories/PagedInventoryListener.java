@@ -2,6 +2,9 @@ package com.tchristofferson.pagedinventories;
 
 import com.tchristofferson.pagedinventories.handlers.PagedInventoryClickHandler;
 import com.tchristofferson.pagedinventories.handlers.PagedInventoryCloseHandler;
+import com.tchristofferson.pagedinventories.handlers.PagedInventoryCustomNavigationHandler;
+import com.tchristofferson.pagedinventories.navigationitems.CustomNavigationItem;
+import com.tchristofferson.pagedinventories.navigationitems.NavigationItem;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,8 +15,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-
-import java.util.Map;
 
 class PagedInventoryListener implements Listener {
 
@@ -34,17 +35,21 @@ class PagedInventoryListener implements Listener {
         event.setCancelled(true);
         IPagedInventory pagedInventory = registrar.getOpenPagedInventories().get(player.getUniqueId());
         ItemStack clicked = event.getCurrentItem();
-        Map<NavigationType, ItemStack> navigation = pagedInventory.getNavigation();
+        NavigationItem navigationItem = pagedInventory.getNavigationItem(event.getSlot() - (event.getInventory().getSize() - 9));
 
-        if (clicked != null && navigation.containsValue(clicked)) {
+        if (clicked != null && navigationItem != null) {
             Inventory inventory = event.getClickedInventory();
 
-            if (navigation.get(NavigationType.NEXT).equals(clicked)) {
+            //Handlers automatically called inside of paged inventory methods
+            if (navigationItem.getNavigationType() == NavigationType.NEXT) {
                 Bukkit.getScheduler().runTask(plugin, () -> pagedInventory.openNext(player, inventory));
-            } else if (navigation.get(NavigationType.PREVIOUS).equals(clicked)) {
+            } else if (navigationItem.getNavigationType() == NavigationType.PREVIOUS) {
                 Bukkit.getScheduler().runTask(plugin, () -> pagedInventory.openPrevious(player, inventory));
-            } else {
+            } else if (navigationItem.getNavigationType() == NavigationType.CLOSE) {
                 Bukkit.getScheduler().runTask(plugin, player::closeInventory);
+            } else {
+                CustomNavigationItem customNavigationItem = (CustomNavigationItem) navigationItem;
+                customNavigationItem.handleClick(new PagedInventoryCustomNavigationHandler(pagedInventory, event));
             }
 
             return;
