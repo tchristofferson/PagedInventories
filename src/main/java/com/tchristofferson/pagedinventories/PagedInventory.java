@@ -374,7 +374,13 @@ class PagedInventory implements IPagedInventory {
             return false;
 
         PagedInventory inv = (PagedInventory) obj;
-        return registrar.equals(inv.registrar) && pages.equals(inv.pages) && navigation.equals(inv.navigation);
+
+        return registrar.equals(inv.registrar)
+                && pages.equals(inv.pages)
+                && navigation.equals(inv.navigation)
+                && clickHandlers.equals(inv.clickHandlers)
+                && closeHandlers.equals(inv.closeHandlers)
+                && switchHandlers.equals(inv.switchHandlers);
     }
 
     private boolean containsRequiredNavigation(Collection<NavigationItem> navigationItems) {
