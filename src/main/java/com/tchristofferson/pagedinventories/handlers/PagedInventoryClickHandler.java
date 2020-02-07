@@ -65,8 +65,16 @@ public abstract class PagedInventoryClickHandler extends PagedInventoryHandler {
             return event.isShiftClick();
         }
 
+        public boolean isCancelled(boolean b) {
+            return event.isCancelled();
+        }
+
         public void setCurrentItem(ItemStack itemStack) {
             event.setCurrentItem(itemStack);
+        }
+
+        public void setCancelled(boolean b) {
+            event.setCancelled(b);
         }
 
         @Override
