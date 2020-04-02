@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
-class PagedInventory implements IPagedInventory {
+public class PagedInventory implements IPagedInventory {
 
     private final InventoryRegistrar registrar;
     private final List<Inventory> pages;

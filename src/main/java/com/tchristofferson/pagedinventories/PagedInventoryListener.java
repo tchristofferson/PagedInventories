@@ -16,7 +16,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-public class PagedInventoryListener implements Listener {
+class PagedInventoryListener implements Listener {
 
     private final Plugin plugin;
     private final InventoryRegistrar registrar;
