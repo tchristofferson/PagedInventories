@@ -31,6 +31,7 @@ public class PagedInventory implements IPagedInventory {
         this.navigationRow = navigationRow;
     }
 
+    @Deprecated
     protected PagedInventory(InventoryRegistrar registrar, Map<Integer, NavigationItem> navigation) {
         this(registrar, getFromMap(navigation));
     }
