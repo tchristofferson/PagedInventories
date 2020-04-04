@@ -45,13 +45,15 @@ public class NavigationRow {
         checkSlot(slot);
         Preconditions.checkArgument(navigation[slot] == null || navigation[slot].getNavigationType() == NavigationType.CUSTOM,
                 "Can only set custom navigation buttons");
+        Preconditions.checkArgument(navigationItem == null || navigationItem.getNavigationType() == NavigationType.CUSTOM,
+                "Cannot change non-custom navigation items");
 
         navigation[slot] = navigationItem;
     }
 
     NavigationItem getNavigationItem(NavigationType type) {
         for (NavigationItem navigationItem : navigation) {
-            if (navigationItem.getNavigationType() == type)
+            if (navigationItem != null && navigationItem.getNavigationType() == type)
                 return navigationItem;
         }
 
