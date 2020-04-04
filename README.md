@@ -29,7 +29,7 @@ PagedInventoryAPI api = new PagedInventoryAPI(plugin);
 Create a PagedInventory like so (the buttons are item stacks you want to use for navigation buttons between pages):
 ```
 //Custom navigation buttons
-CustomNavigationItem navigationItem = new CustomNavigationItem(new ItemStack(Material.BOOK)) {
+CustomNavigationItem navigationItem = new CustomNavigationItem(new ItemStack(Material.BOOK), slot) {
     @Override
     public void handleClick(PagedInventoryCustomNavigationHandler handler) {
         //Handle the click here
