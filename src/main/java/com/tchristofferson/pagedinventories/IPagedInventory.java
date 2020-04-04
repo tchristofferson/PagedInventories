@@ -158,8 +158,16 @@ public interface IPagedInventory {
     /**
      * Get the navigation buttons of this paged inventory
      * @return A Map of the navigation where the key is the {@link NavigationType} and the value is the item stack representing the button
+     * @deprecated use {@link IPagedInventory#getNavigationRow()}
      */
+    @Deprecated
     Map<Integer, NavigationItem> getNavigation();
+
+    /**
+     * Get the navigation row
+     * @return The navigation row
+     */
+    NavigationRow getNavigationRow();
 
     /**
      * Get the navigation item at the specified slot
@@ -179,7 +187,9 @@ public interface IPagedInventory {
      * Update a navigation button of this paged inventory
      * @param slot The slot in the bottom bar of the page (0-8)
      * @param navigationItem The item to replace the item in the specified slot
+     * @deprecated use {@link IPagedInventory#getNavigationRow()} and {@link NavigationRow#set(int, NavigationItem)}
      */
+    @Deprecated
     void setNavigation(Integer slot, NavigationItem navigationItem);
 
     /**

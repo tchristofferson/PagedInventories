@@ -4,8 +4,8 @@ import org.bukkit.inventory.ItemStack;
 
 public abstract class NavigationItemCloneable extends NavigationItem implements Cloneable {
 
-    NavigationItemCloneable(ItemStack itemStack) {
-        super(itemStack);
+    NavigationItemCloneable(ItemStack itemStack, int slot) {
+        super(itemStack, slot);
     }
 
     @Override

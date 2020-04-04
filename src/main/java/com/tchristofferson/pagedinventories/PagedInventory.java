@@ -2,8 +2,7 @@ package com.tchristofferson.pagedinventories;
 
 import com.google.common.base.Preconditions;
 import com.tchristofferson.pagedinventories.handlers.*;
-import com.tchristofferson.pagedinventories.navigationitems.NavigationItem;
-import com.tchristofferson.pagedinventories.navigationitems.NavigationItemCloneable;
+import com.tchristofferson.pagedinventories.navigationitems.*;
 import com.tchristofferson.pagedinventories.utils.InventoryUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
@@ -17,20 +16,23 @@ public class PagedInventory implements IPagedInventory {
 
     private final InventoryRegistrar registrar;
     private final List<Inventory> pages;
-    private final Map<Integer, NavigationItem> navigation;
+    private final NavigationRow navigationRow;
 
     private final List<PagedInventoryClickHandler> clickHandlers;
     private final List<PagedInventoryCloseHandler> closeHandlers;
     private final List<PagedInventorySwitchPageHandler> switchHandlers;
 
-    protected PagedInventory(InventoryRegistrar registrar, Map<Integer, NavigationItem> navigation) {
-        Preconditions.checkArgument(containsRequiredNavigation(navigation.values()));
+    protected PagedInventory(InventoryRegistrar registrar, NavigationRow navigationRow) {
         this.registrar = registrar;
         this.pages = new ArrayList<>();
-        this.navigation = navigation;
         this.clickHandlers = new ArrayList<>(3);
         this.closeHandlers = new ArrayList<>(3);
         this.switchHandlers = new ArrayList<>(3);
+        this.navigationRow = navigationRow;
+    }
+
+    protected PagedInventory(InventoryRegistrar registrar, Map<Integer, NavigationItem> navigation) {
+        this(registrar, getFromMap(navigation));
     }
 
     /**
@@ -224,22 +226,22 @@ public class PagedInventory implements IPagedInventory {
         if (!skipContentCheck && inventory.getContents().length != 0) {
             for (int i = inventory.getSize() - 9; i < inventory.getSize(); i++) {
                 ItemStack itemStack = inventory.getItem(i);
-                if (itemStack != null && !itemStack.getType().name().endsWith("AIR"))
+                if (itemStack != null)
                     itemStack.setAmount(0);
             }
         }
 
         if (!pages.isEmpty()) {
-            Map.Entry<Integer, NavigationItem> previousEntry = getNavigationItem(NavigationType.PREVIOUS);
-            Map.Entry<Integer, NavigationItem> nextEntry = getNavigationItem(NavigationType.NEXT);
+            NavigationItem previousItem = navigationRow.getNavigationItem(NavigationType.PREVIOUS);
+            NavigationItem nextItem = navigationRow.getNavigationItem(NavigationType.NEXT);
 
-            inventory.setItem(previousEntry.getKey(), previousEntry.getValue().getItemStack());
+            inventory.setItem(previousItem.getSlot(), previousItem.getItemStack());
             Inventory currentLast = pages.get(pages.size() - 1);
-            currentLast.setItem(nextEntry.getKey(), nextEntry.getValue().getItemStack());
+            currentLast.setItem(nextItem.getSlot(), nextItem.getItemStack());
         }
 
-        Map.Entry<Integer, NavigationItem> closeEntry = getNavigationItem(NavigationType.CLOSE);
-        inventory.setItem(closeEntry.getKey(), closeEntry.getValue().getItemStack());
+        NavigationItem closeItem = navigationRow.getNavigationItem(NavigationType.CLOSE);
+        inventory.setItem(closeItem.getSlot(), closeItem.getItemStack());
         pages.add(inventory);
     }
 
@@ -291,28 +293,33 @@ public class PagedInventory implements IPagedInventory {
      */
     @Override
     public Map<Integer, NavigationItem> getNavigation() {
-        Map<Integer, NavigationItem> nav = new HashMap<>(navigation.size());
-        navigation.forEach((slot, navigationItem) -> {
-            if (navigationItem instanceof NavigationItemCloneable) {
-                nav.put(slot, ((NavigationItemCloneable) navigationItem).clone());
-            } else {
-                nav.put(slot, navigationItem);
-            }
-        });
+        Map<Integer, NavigationItem> nav = new HashMap<>(9);
+
+        for (int i = 0; i < 9; i++) {
+            NavigationItem navigationItem = navigationRow.get(i);
+
+            if (navigationItem != null)
+                nav.put(i, navigationItem);
+        }
 
         return nav;
     }
 
     @Override
+    public NavigationRow getNavigationRow() {
+        return navigationRow;
+    }
+
+    @Override
     public NavigationItem getNavigationItem(int slot) {
-        return navigation.get(slot);
+        return navigationRow.get(slot);
     }
 
     @Override
     public int getNavigationItem(NavigationItem navigationItem) {
-        for (Map.Entry<Integer, NavigationItem> entry : navigation.entrySet()) {
-            if (entry.getValue().equals(navigationItem))
-                return entry.getKey();
+        for (int i = 0; i < 9; i++) {
+            if (navigationItem.equals(navigationRow.get(i)))
+                return i;
         }
 
         return -1;
@@ -324,19 +331,7 @@ public class PagedInventory implements IPagedInventory {
      */
     @Override
     public void setNavigation(Integer slot, NavigationItem navigationItem) {
-        validateNavSlot(slot);
-        NavigationType type = navigationItem.getNavigationType();
-        Preconditions.checkArgument(type == NavigationType.CUSTOM, "You can't add another " + type.toString().toLowerCase() + " navigation item!");
-
-        NavigationItem oldItem = navigation.remove(slot);
-        if (oldItem != null) {
-            Preconditions.checkArgument(oldItem.getNavigationType() == NavigationType.CUSTOM, "Can't replace non-custom navigation items!");
-        }
-
-        navigation.put(slot, navigationItem);
-        for (Inventory page : pages) {
-            page.setItem(slot, navigationItem.getItemStack());
-        }
+        navigationRow.set(slot, navigationItem);
     }
 
     /**
@@ -377,46 +372,33 @@ public class PagedInventory implements IPagedInventory {
 
         return registrar.equals(inv.registrar)
                 && pages.equals(inv.pages)
-                && navigation.equals(inv.navigation)
+                && navigationRow.equals(inv.navigationRow)
                 && clickHandlers.equals(inv.clickHandlers)
                 && closeHandlers.equals(inv.closeHandlers)
                 && switchHandlers.equals(inv.switchHandlers);
     }
 
-    private boolean containsRequiredNavigation(Collection<NavigationItem> navigationItems) {
-        boolean hasNext = false, hasPrevious = false, hasClose = false;
+    private static NavigationRow getFromMap(Map<Integer, NavigationItem> navigation) {
+        NextNavigationItem nextItem = null;
+        PreviousNavigationItem previousItem = null;
+        CloseNavigationItem closeItem = null;
+        List<NavigationItem> navigationItems = new ArrayList<>(9);
 
-        for (NavigationItem navigationItem : navigationItems) {
-            NavigationType type = navigationItem.getNavigationType();
-
-            if (type == NavigationType.CUSTOM)
-                continue;
-
-            if (type == NavigationType.NEXT) {
-                hasNext = true;
-            } else if (type == NavigationType.PREVIOUS) {
-                hasPrevious = true;
-            } else {
-                hasClose = true;
-            }
-
-            if (hasNext && hasPrevious && hasClose)
-                return true;
-        }
-
-        return false;
-    }
-
-    private Map.Entry<Integer, NavigationItem> getNavigationItem(NavigationType navigationType) {
         for (Map.Entry<Integer, NavigationItem> entry : navigation.entrySet()) {
-            if (entry.getValue().getNavigationType() == navigationType)
-                return new AbstractMap.SimpleImmutableEntry<>(entry);
+            switch (entry.getValue().getNavigationType()) {
+                case NEXT:
+                    nextItem = (NextNavigationItem) entry.getValue();
+                    break;
+                case PREVIOUS:
+                    previousItem = (PreviousNavigationItem) entry.getValue();
+                    break;
+                case CLOSE:
+                    closeItem = (CloseNavigationItem) entry.getValue();
+                default:
+                    navigationItems.add(entry.getValue());
+            }
         }
 
-        throw new IllegalStateException("Navigation doesn't have next button!");
-    }
-
-    private void validateNavSlot(int slot) {
-        Preconditions.checkArgument(slot >= 0 && slot <= 8, "Slot must be between 0 and 8");
+        return new NavigationRow(nextItem, previousItem, closeItem, navigationItems.toArray(new NavigationItem[0]));
     }
 }

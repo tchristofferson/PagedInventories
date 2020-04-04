@@ -6,7 +6,11 @@ import org.bukkit.inventory.ItemStack;
 public final class NextNavigationItem extends NavigationItemCloneable {
 
     public NextNavigationItem(ItemStack itemStack) {
-        super(itemStack);
+        this(itemStack, 8);
+    }
+
+    public NextNavigationItem(ItemStack itemStack, int slot) {
+        super(itemStack, slot);
     }
 
     @Override

@@ -6,8 +6,8 @@ import org.bukkit.inventory.ItemStack;
 
 public abstract class CustomNavigationItem extends NavigationItem {
 
-    public CustomNavigationItem(ItemStack itemStack) {
-        super(itemStack);
+    public CustomNavigationItem(ItemStack itemStack, int slot) {
+        super(itemStack, slot);
     }
 
     @Override

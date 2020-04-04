@@ -8,6 +8,6 @@ public enum NavigationType {
     NEXT,
     PREVIOUS,
     CLOSE,
-    CUSTOM
+    CUSTOM;
 
 }

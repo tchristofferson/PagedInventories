@@ -6,7 +6,11 @@ import org.bukkit.inventory.ItemStack;
 public final class CloseNavigationItem extends NavigationItemCloneable {
 
     public CloseNavigationItem(ItemStack itemStack) {
-        super(itemStack);
+        this(itemStack, 4);
+    }
+
+    public CloseNavigationItem(ItemStack itemStack, int slot) {
+        super(itemStack, slot);
     }
 
     @Override
