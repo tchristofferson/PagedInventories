@@ -29,27 +29,34 @@ class PagedInventoryListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInventoryClickEvent(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
-        if (!registrar.getOpenInventories().containsKey(player.getUniqueId()))
+        Inventory inventory = event.getClickedInventory();
+        if (inventory == null || !registrar.getOpenInventories().containsKey(player.getUniqueId()))
             return;
 
         event.setCancelled(true);
         IPagedInventory pagedInventory = registrar.getOpenPagedInventories().get(player.getUniqueId());
         ItemStack clicked = event.getCurrentItem();
-        NavigationItem navigationItem = pagedInventory.getNavigationItem(event.getSlot() - (event.getInventory().getSize() - 9));
 
-        if (clicked != null && navigationItem != null) {
-            Inventory inventory = event.getClickedInventory();
+        if (clicked != null) {
+            NavigationItem navigationItem;
 
-            //Handlers automatically called inside of paged inventory methods
-            if (navigationItem.getNavigationType() == NavigationType.NEXT) {
-                Bukkit.getScheduler().runTask(plugin, () -> pagedInventory.openNext(player, inventory));
-            } else if (navigationItem.getNavigationType() == NavigationType.PREVIOUS) {
-                Bukkit.getScheduler().runTask(plugin, () -> pagedInventory.openPrevious(player, inventory));
-            } else if (navigationItem.getNavigationType() == NavigationType.CLOSE) {
-                Bukkit.getScheduler().runTask(plugin, player::closeInventory);
-            } else {
-                CustomNavigationItem customNavigationItem = (CustomNavigationItem) navigationItem;
-                customNavigationItem.handleClick(new PagedInventoryCustomNavigationHandler(pagedInventory, event));
+            if (event.getSlot() <= inventory.getSize() - 9)
+                navigationItem = null;
+            else
+                navigationItem = pagedInventory.getNavigationItem(event.getSlot() - (inventory.getSize() - 9));
+
+            if (navigationItem != null) {
+                //Handlers automatically called inside of paged inventory methods
+                if (navigationItem.getNavigationType() == NavigationType.NEXT) {
+                    Bukkit.getScheduler().runTask(plugin, () -> pagedInventory.openNext(player, inventory));
+                } else if (navigationItem.getNavigationType() == NavigationType.PREVIOUS) {
+                    Bukkit.getScheduler().runTask(plugin, () -> pagedInventory.openPrevious(player, inventory));
+                } else if (navigationItem.getNavigationType() == NavigationType.CLOSE) {
+                    Bukkit.getScheduler().runTask(plugin, player::closeInventory);
+                } else {
+                    CustomNavigationItem customNavigationItem = (CustomNavigationItem) navigationItem;
+                    customNavigationItem.handleClick(new PagedInventoryCustomNavigationHandler(pagedInventory, event));
+                }
             }
 
             return;
