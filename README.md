@@ -28,18 +28,11 @@ PagedInventoryAPI api = new PagedInventoryAPI(plugin);
 ```
 Create a PagedInventory like so (the buttons are item stacks you want to use for navigation buttons between pages):
 ```
-//key=inventory slot, 0 - 8 only
-Map<Integer, NavigationItem> navigationButtons = new HashMap<>();
-navigationButtons.put(0, new PreviousNavigationItem(new ItemStack(Material.PLAYER_HEAD)));
-navigationButtons.put(4, new CloseNavigationItem(new ItemStack(Material.BARRIER)));
-navigationButtons.put(8, new NextNavigationItem(new ItemStack(Material.PLAYER_HEAD)));
-
 //Custom navigation buttons
 CustomNavigationItem navigationItem = new CustomNavigationItem(new ItemStack(Material.BOOK)) {
     @Override
     public void handleClick(PagedInventoryCustomNavigationHandler handler) {
         //Handle the click here
-
         //Page modifier is used to modify the items in the inventory.
         //It is used to prevent developers from modifying the inventories navigation row.
         PageModifier pageModifier = handler.getPageModifier();
@@ -48,8 +41,8 @@ CustomNavigationItem navigationItem = new CustomNavigationItem(new ItemStack(Mat
     }
 };
 
-navigationButtons.put(2, navigationItem);
-PagedInventory pagedInventory = api.createPagedInventory(navigationButtons);
+NavigationRow navigationRow = new NavigationRow(nextNavItem, prevNavItem, closeNavItem, navigationItem);
+PagedInventory pagedInventory = api.createPagedInventory(navigationRow);
 ```
 Add pages like so:
 ```
