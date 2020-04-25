@@ -11,7 +11,7 @@ Is on Maven Central
 ```
 <repository>
     <id>pagedinventories-repo</id>
-    <url>https://oss.sonatype.org/content/groups/public/</url>
+    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
 </repository>
 ```
 ```
