@@ -57,9 +57,9 @@ class PagedInventoryListener implements Listener {
                     CustomNavigationItem customNavigationItem = (CustomNavigationItem) navigationItem;
                     customNavigationItem.handleClick(new PagedInventoryCustomNavigationHandler(pagedInventory, event));
                 }
-            }
 
-            return;
+                return;
+            }
         }
 
         PagedInventoryClickHandler.Handler globalHandler = new PagedInventoryClickHandler.Handler(pagedInventory, event);
