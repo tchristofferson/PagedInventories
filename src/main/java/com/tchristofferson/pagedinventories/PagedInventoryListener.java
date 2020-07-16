@@ -40,7 +40,7 @@ class PagedInventoryListener implements Listener {
         if (clicked != null) {
             NavigationItem navigationItem;
 
-            if (event.getSlot() <= inventory.getSize() - 9)
+            if (event.getSlot() < inventory.getSize() - 9)
                 navigationItem = null;
             else
                 navigationItem = pagedInventory.getNavigationItem(event.getSlot() - (inventory.getSize() - 9));
