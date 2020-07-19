@@ -9,6 +9,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
+import java.util.UUID;
 
 public interface IPagedInventory {
 
@@ -22,9 +23,9 @@ public interface IPagedInventory {
 
     /**
      * Call the click handlers. This method is called automatically when a player clicks a paged inventory
-     * @param handler The handler
+     * @param clickHandler The handler
      */
-    void callClickHandlers(PagedInventoryClickHandler.Handler handler);
+    void callClickHandlers(PagedInventoryClickHandler.ClickHandler clickHandler);
 
     /**
      * Clears all click handlers
@@ -40,9 +41,9 @@ public interface IPagedInventory {
 
     /**
      * Call the close handlers. This method is called automatically when a player clicks a paged inventory
-     * @param handler The handler
+     * @param closeHandler The handler
      */
-    void callCloseHandlers(PagedInventoryCloseHandler.Handler handler);
+    void callCloseHandlers(PagedInventoryCloseHandler.CloseHandler closeHandler);
 
     /**
      * Clears all close handlers
@@ -58,9 +59,9 @@ public interface IPagedInventory {
 
     /**
      * Call the switch page handlers. This method is called automatically when a player clicks a paged inventory
-     * @param handler The handler
+     * @param switchHandler The handler
      */
-    void callSwitchHandlers(PagedInventorySwitchPageHandler.Handler handler);
+    void callSwitchHandlers(PagedInventorySwitchPageHandler.SwitchHandler switchHandler);
 
     /**
      * Clears all switch page handlers
@@ -191,6 +192,13 @@ public interface IPagedInventory {
      */
     @Deprecated
     void setNavigation(Integer slot, NavigationItem navigationItem);
+
+    /**
+     * Get the UUIDs of the players viewing one of the pages in the paged inventory.
+     * The key is the player's UUID, the value is the index of the page they are viewing.
+     * @return a map of player UUIDs and the index of the page they are viewing
+     */
+    Map<UUID, Integer> getViewers();
 
     /**
      * Get how many inventory pages there are

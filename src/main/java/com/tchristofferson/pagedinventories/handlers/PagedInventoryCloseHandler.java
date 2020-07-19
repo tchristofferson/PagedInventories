@@ -6,11 +6,11 @@ import org.bukkit.inventory.InventoryView;
 
 public abstract class PagedInventoryCloseHandler extends PagedInventoryHandler {
 
-    public abstract void handle(PagedInventoryCloseHandler.Handler handler);
+    public abstract void handle(CloseHandler closeHandler);
 
-    public static class Handler extends PagedInventoryHandler.Handler {
+    public static class CloseHandler extends PagedInventoryHandler.Handler {
 
-        public Handler(IPagedInventory iPagedInventory, InventoryView inventoryView, Player player) {
+        public CloseHandler(IPagedInventory iPagedInventory, InventoryView inventoryView, Player player) {
             super(iPagedInventory, inventoryView, player);
         }
 

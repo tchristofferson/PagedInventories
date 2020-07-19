@@ -6,14 +6,14 @@ import org.bukkit.inventory.InventoryView;
 
 public abstract class PagedInventorySwitchPageHandler extends PagedInventoryHandler {
 
-    public abstract void handle(PagedInventorySwitchPageHandler.Handler handler);
+    public abstract void handle(SwitchHandler switchHandler);
 
-    public static class Handler extends PagedInventoryHandler.Handler {
+    public static class SwitchHandler extends PagedInventoryHandler.Handler {
 
         private final PageAction pageAction;
         private final int indexFrom;
 
-        public Handler(IPagedInventory iPagedInventory, InventoryView inventoryView, Player player, PageAction pageAction, int indexFrom) {
+        public SwitchHandler(IPagedInventory iPagedInventory, InventoryView inventoryView, Player player, PageAction pageAction, int indexFrom) {
             super(iPagedInventory, inventoryView, player);
             this.pageAction = pageAction;
             this.indexFrom = indexFrom;
@@ -23,13 +23,13 @@ public abstract class PagedInventorySwitchPageHandler extends PagedInventoryHand
         public boolean equals(Object obj) {
             if (obj == this)
                 return true;
-            if (!(obj instanceof Handler))
+            if (!(obj instanceof SwitchHandler))
                 return false;
 
-            Handler handler = (Handler) obj;
-            return super.equals(handler)
-                    && pageAction == handler.pageAction
-                    && indexFrom == handler.indexFrom;
+            SwitchHandler switchHandler = (SwitchHandler) obj;
+            return super.equals(switchHandler)
+                    && pageAction == switchHandler.pageAction
+                    && indexFrom == switchHandler.indexFrom;
         }
 
         public PageAction getPageAction() {

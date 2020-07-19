@@ -48,8 +48,8 @@ public class PagedInventory implements IPagedInventory {
      * {@inheritDoc}
      */
     @Override
-    public void callClickHandlers(PagedInventoryClickHandler.Handler handler) {
-        clickHandlers.forEach(pagedInventoryClickHandler -> pagedInventoryClickHandler.handle(handler));
+    public void callClickHandlers(PagedInventoryClickHandler.ClickHandler clickHandler) {
+        clickHandlers.forEach(pagedInventoryClickHandler -> pagedInventoryClickHandler.handle(clickHandler));
     }
 
     /**
@@ -72,8 +72,8 @@ public class PagedInventory implements IPagedInventory {
      * {@inheritDoc}
      */
     @Override
-    public void callCloseHandlers(PagedInventoryCloseHandler.Handler handler) {
-        closeHandlers.forEach(pagedInventoryCloseHandler -> pagedInventoryCloseHandler.handle(handler));
+    public void callCloseHandlers(PagedInventoryCloseHandler.CloseHandler closeHandler) {
+        closeHandlers.forEach(pagedInventoryCloseHandler -> pagedInventoryCloseHandler.handle(closeHandler));
     }
 
     /**
@@ -96,8 +96,8 @@ public class PagedInventory implements IPagedInventory {
      * {@inheritDoc}
      */
     @Override
-    public void callSwitchHandlers(PagedInventorySwitchPageHandler.Handler handler) {
-        switchHandlers.forEach(pagedInventorySwitchPageHandler -> pagedInventorySwitchPageHandler.handle(handler));
+    public void callSwitchHandlers(PagedInventorySwitchPageHandler.SwitchHandler switchHandler) {
+        switchHandlers.forEach(pagedInventorySwitchPageHandler -> pagedInventorySwitchPageHandler.handle(switchHandler));
     }
 
     /**
@@ -136,10 +136,10 @@ public class PagedInventory implements IPagedInventory {
         boolean success = open(player, index + 1);
 
         if (success) {
-            PagedInventorySwitchPageHandler.Handler handler = new PagedInventorySwitchPageHandler.Handler(
+            PagedInventorySwitchPageHandler.SwitchHandler switchHandler = new PagedInventorySwitchPageHandler.SwitchHandler(
                     this, player.getOpenInventory(), player, PagedInventorySwitchPageHandler.PageAction.NEXT, index);
-            registrar.callGlobalSwitchHandlers(handler);
-            callSwitchHandlers(handler);
+            registrar.callGlobalSwitchHandlers(switchHandler);
+            callSwitchHandlers(switchHandler);
         }
 
         return success;
@@ -158,10 +158,10 @@ public class PagedInventory implements IPagedInventory {
         boolean success = open(player, index - 1);
 
         if (success) {
-            PagedInventorySwitchPageHandler.Handler handler = new PagedInventorySwitchPageHandler.Handler(
+            PagedInventorySwitchPageHandler.SwitchHandler switchHandler = new PagedInventorySwitchPageHandler.SwitchHandler(
                     this, player.getOpenInventory(), player, PagedInventorySwitchPageHandler.PageAction.PREVIOUS, index);
-            registrar.callGlobalSwitchHandlers(handler);
-            callSwitchHandlers(handler);
+            registrar.callGlobalSwitchHandlers(switchHandler);
+            callSwitchHandlers(switchHandler);
         }
 
         return success;
@@ -190,6 +190,9 @@ public class PagedInventory implements IPagedInventory {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int indexOf(Inventory inventory) {
         return pages.indexOf(inventory);
@@ -306,16 +309,25 @@ public class PagedInventory implements IPagedInventory {
         return nav;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public NavigationRow getNavigationRow() {
         return navigationRow;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public NavigationItem getNavigationItem(int slot) {
         return navigationRow.get(slot);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getNavigationItem(NavigationItem navigationItem) {
         for (int i = 0; i < 9; i++) {
@@ -339,6 +351,24 @@ public class PagedInventory implements IPagedInventory {
      * {@inheritDoc}
      */
     @Override
+    public Map<UUID, Integer> getViewers() {
+        Map<UUID, Integer> viewers = new HashMap<>();
+
+        for (int i = 0; i < pages.size(); i++) {
+            Inventory page = pages.get(i);
+
+            for (HumanEntity viewer : page.getViewers()) {
+                viewers.put(viewer.getUniqueId(), i);
+            }
+        }
+
+        return viewers;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int getSize() {
         return pages.size();
     }
@@ -350,10 +380,10 @@ public class PagedInventory implements IPagedInventory {
 
         if (fallbackIndex == null) {
             viewers.forEach(viewer -> {
-                PagedInventoryCloseHandler.Handler handler = new PagedInventoryCloseHandler.Handler(this, viewer.getOpenInventory(), ((Player) viewer));
+                PagedInventoryCloseHandler.CloseHandler closeHandler = new PagedInventoryCloseHandler.CloseHandler(this, viewer.getOpenInventory(), ((Player) viewer));
                 viewer.closeInventory();
-                registrar.callGlobalCloseHandlers(handler);
-                callCloseHandlers(handler);
+                registrar.callGlobalCloseHandlers(closeHandler);
+                callCloseHandlers(closeHandler);
             });
 
             return;

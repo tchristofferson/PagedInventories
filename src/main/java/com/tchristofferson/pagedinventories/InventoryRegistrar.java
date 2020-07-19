@@ -78,7 +78,7 @@ public class InventoryRegistrar {
 
     /**
      * Add a global click handler
-     * Whenever any paged inventory gets clicked the specified {@link PagedInventoryClickHandler#handle(PagedInventoryClickHandler.Handler)} will be called
+     * Whenever any paged inventory gets clicked the specified {@link PagedInventoryClickHandler#handle(PagedInventoryClickHandler.ClickHandler)} will be called
      * The global handler is called before the paged inventory specific handler(s)
      * @param handler The handler
      */
@@ -88,7 +88,7 @@ public class InventoryRegistrar {
 
     /**
      * Add a global close handler
-     * Whenever any paged inventory gets closed the specified {@link PagedInventoryCloseHandler#handle(PagedInventoryCloseHandler.Handler)} will be called
+     * Whenever any paged inventory gets closed the specified {@link PagedInventoryCloseHandler#handle(PagedInventoryCloseHandler.CloseHandler)} will be called
      * The global handler is called before the paged inventory specific handler(s)
      * @param handler The handler
      */
@@ -98,7 +98,7 @@ public class InventoryRegistrar {
 
     /**
      * Add a global switch page handler
-     * Whenever any player switches pages the specified {@link PagedInventorySwitchPageHandler#handle(PagedInventorySwitchPageHandler.Handler)} will be called
+     * Whenever any player switches pages the specified {@link PagedInventorySwitchPageHandler#handle(PagedInventorySwitchPageHandler.SwitchHandler)} will be called
      * The global handler is called before the paged inventory specific handler(s)
      * @param handler The handler
      */
@@ -106,8 +106,8 @@ public class InventoryRegistrar {
         globalSwitchHandlers.add(handler);
     }
 
-    void callGlobalClickHandlers(PagedInventoryClickHandler.Handler handler) {
-        globalClickHandlers.forEach(pagedInventoryGlobalClickHandler -> pagedInventoryGlobalClickHandler.handle(handler));
+    void callGlobalClickHandlers(PagedInventoryClickHandler.ClickHandler clickHandler) {
+        globalClickHandlers.forEach(pagedInventoryGlobalClickHandler -> pagedInventoryGlobalClickHandler.handle(clickHandler));
     }
 
     /**
@@ -118,8 +118,8 @@ public class InventoryRegistrar {
         globalClickHandlers.clear();
     }
 
-    void callGlobalCloseHandlers(PagedInventoryCloseHandler.Handler handler) {
-        globalCloseHandlers.forEach(pagedInventoryGlobalHandler -> pagedInventoryGlobalHandler.handle(handler));
+    void callGlobalCloseHandlers(PagedInventoryCloseHandler.CloseHandler closeHandler) {
+        globalCloseHandlers.forEach(pagedInventoryGlobalHandler -> pagedInventoryGlobalHandler.handle(closeHandler));
     }
 
     /**
@@ -130,8 +130,8 @@ public class InventoryRegistrar {
         globalCloseHandlers.clear();
     }
 
-    void callGlobalSwitchHandlers(PagedInventorySwitchPageHandler.Handler handler) {
-        globalSwitchHandlers.forEach(pagedInventoryGlobalSwitchHandler -> pagedInventoryGlobalSwitchHandler.handle(handler));
+    void callGlobalSwitchHandlers(PagedInventorySwitchPageHandler.SwitchHandler switchHandler) {
+        globalSwitchHandlers.forEach(pagedInventoryGlobalSwitchHandler -> pagedInventoryGlobalSwitchHandler.handle(switchHandler));
     }
 
     /**
