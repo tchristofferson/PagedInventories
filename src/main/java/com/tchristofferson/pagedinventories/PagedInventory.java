@@ -246,6 +246,14 @@ public class PagedInventory implements IPagedInventory {
 
         NavigationItem closeItem = navigationRow.getNavigationItem(NavigationType.CLOSE);
         inventory.setItem(closeItem.getSlot() + inventory.getSize() - 9, closeItem.getItemStack());
+
+        for (int i = 0; i < 9; i++) {
+            NavigationItem item = navigationRow.get(i);
+
+            if (item != null && item.getNavigationType() == NavigationType.CUSTOM)
+                inventory.setItem(inventory.getSize() - 9 + i, item.getItemStack());
+        }
+
         pages.add(inventory);
     }
 
