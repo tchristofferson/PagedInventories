@@ -18,7 +18,7 @@ Is on Maven Central
 <dependency>
     <groupId>com.tchristofferson</groupId>
     <artifactId>PagedInventories</artifactId>
-    <version>2.2-SNAPSHOT</version>
+    <version>2.3-SNAPSHOT</version>
 </dependency>
 ```
 ### How to use
